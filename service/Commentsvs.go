@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-func Setcomment(cm Struct.Comment, c *gin.Context) {
+func Setcomment(cm Struct.Comment, c *gin.Context) bool {
 	err := dao.OpenDb()
 	if err != nil {
 		fmt.Println(err)
-		return
+		return false
 	}
 	flag := dao.Querymovie(cm.Id)
 	if flag == false {
@@ -20,13 +20,14 @@ func Setcomment(cm Struct.Comment, c *gin.Context) {
 			"状态":   "失败",
 			"可能原因": "没有该电影",
 		})
-		return
+		return false
 	}
 	err = dao.Insertcomment(cm)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return false
 	}
+	return true
 }
 
 func Setchildcomment(pid int, from_id int, from_username string, content string, useful int) {

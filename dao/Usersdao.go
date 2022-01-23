@@ -16,14 +16,14 @@ func Queryuserpassword(username string) string {
 	return U.Password
 }
 
-func Queryusername(username string) error {
+func Queryusername(username string) (int, error) {
 	U := new(Struct.User)
 	err := Db.QueryRow("select username,id from user where username = ?;", username).Scan(&U.Username, &U.Id)
 	if err != nil {
 		fmt.Println("查询错误", err)
-		return err
+		return 0, err
 	}
-	return nil
+	return U.Id, nil
 }
 
 func Insertuser(username string, password string, protectionQ string, protectionA string) error {

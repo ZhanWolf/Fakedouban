@@ -9,8 +9,9 @@ import (
 func main() {
 	r := gin.Default()
 	cmd.Userroute(r)
-	cmd.Messageroute(r)
 	cmd.Moneyroute(r)
+	cmd.Movieroute(r)
+	cmd.Moviecommentroute(r)
 	r.GET("/help", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"/message/sendmsg":   "发送留言",

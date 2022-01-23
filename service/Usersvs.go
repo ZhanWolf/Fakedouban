@@ -26,7 +26,7 @@ func UserLoginser(username string, password string) *http.Cookie {
 
 func Checkuseraliveser(username string) error {
 	dao.OpenDb()
-	err := dao.Queryusername(username)
+	_, err := dao.Queryusername(username)
 	return err
 }
 

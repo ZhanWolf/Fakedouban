@@ -3,10 +3,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"message-board/api"
 )
 
-func Messageroute(r *gin.Engine) {
+/*func Messageroute(r *gin.Engine) {
 	ms := r.Group("/message", cookie)
 	{
 		ms.POST("/sendmsg", api.Messagepost)
@@ -20,7 +19,7 @@ func Messageroute(r *gin.Engine) {
 		ms.POST("/nonamecom", api.Nonamecom)
 		ms.POST("/likes", api.Likes)
 	}
-}
+}*/
 
 func cookie(c *gin.Context) {
 	ck, err := c.Cookie("now_user_login")

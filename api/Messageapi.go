@@ -1,16 +1,6 @@
 package api
 
-import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"message-board/dao"
-	"message-board/service"
-	"net/http"
-	"strconv"
-	"unicode/utf8"
-)
-
-func Messagepost(c *gin.Context) {
+/*func Messagepost(c *gin.Context) {
 	touser := c.PostForm("touser")   //发送给谁
 	message := c.PostForm("message") //评论的内容
 	fromuser, _ := c.Cookie("now_user_login")
@@ -167,4 +157,4 @@ func Likes(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, "点赞成功")
-}
+}*/

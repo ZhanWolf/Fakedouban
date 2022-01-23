@@ -14,20 +14,20 @@ func Insertmessage(fromusername string, tousername string, messagecontent string
 	return err
 }
 
-func Insertcomment(pid int, fromusername string, messagecontent string, tousername string, truename string) {
+/*func Insertcomment(pid int, fromusername string, messagecontent string, tousername string, truename string) {
 	time := time.Now()
 	_, err := Db.Exec("insert into message(fromuser,pid,messagecontent,messagetime,touser,truename,likes) values(?,?,?,?,?,?,0);", fromusername, pid, messagecontent, time, tousername, truename)
 	if err != nil {
 		fmt.Println(err)
 	}
-}
+}*/
 
 func Querycommentuser(id int) (username string, err error) {
 	err = Db.QueryRow("select  touser from  message where id=?;", id).Scan(&username)
 	return username, err
 } //通过id查询username
 
-func Queryuserallcmsg(c *gin.Context, username string) {
+/*func Queryuserallcmsg(c *gin.Context, username string) {
 	var Ms Struct.Message
 	sqlStr := "select messagecontent,id,fromuser,messagetime from message where touser=?;" //遍历写给登录用户的评论
 	rows, err := Db.Query(sqlStr, username)
@@ -53,7 +53,7 @@ func Queryuserallcmsg(c *gin.Context, username string) {
 	}
 	rows.Close()
 sign:
-}
+}*/
 
 func Querymsgallcon(c *gin.Context, pid int) {
 	var Ms Struct.Message
@@ -118,6 +118,7 @@ func utos(u []uint8) string {
 	}
 	return string(by)
 }
+
 func Querymymsg(c *gin.Context) {
 	var Ms Struct.Message
 	myname, _ := c.Cookie("now_user_login")

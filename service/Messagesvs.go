@@ -6,7 +6,7 @@ import (
 	"message-board/dao"
 )
 
-func Setmessage(tousername string, fromusername string, messagecontent string, truename string) error {
+/*func Setmessage(tousername string, fromusername string, messagecontent string, truename string) error {
 	err := dao.OpenDb()
 	if err != nil {
 		fmt.Println(err)
@@ -71,7 +71,7 @@ func Deletemsg(id int) {
 		return
 	}
 	dao.Deletemsg(id)
-}
+}*/
 
 func Updatemsg(messagecomment string, id int) {
 	err := dao.OpenDb()

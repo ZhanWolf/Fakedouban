@@ -2,14 +2,24 @@ package service
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"message-board/Struct"
 	"message-board/dao"
+	"net/http"
 )
 
-func Setcomment(cm Struct.Comment) {
+func Setcomment(cm Struct.Comment, c *gin.Context) {
 	err := dao.OpenDb()
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+	flag := dao.Querymovie(cm.Id)
+	if flag == false {
+		c.JSON(http.StatusOK, gin.H{
+			"状态":   "失败",
+			"可能原因": "没有该电影",
+		})
 		return
 	}
 	err = dao.Insertcomment(cm)

@@ -198,3 +198,13 @@ func QueryPersonpic(id int) []string {
 	rows.Close()
 	return Personpicslice
 }
+
+func Querymovie(id int) bool {
+	var moviname string
+	err := Db.QueryRow("select moviename from movie where id = ?;", id).Scan(&moviname)
+	if err != nil {
+		fmt.Println("查询错误", err)
+		return false
+	}
+	return true
+}

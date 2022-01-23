@@ -29,7 +29,7 @@ func Commentapi(c *gin.Context) {
 	Movieid2, _ := strconv.Atoi(Movieid)
 	cm.Movieid = Movieid2
 
-	service.Setcomment(cm)
+	service.Setcomment(cm, c)
 	c.JSON(http.StatusOK, gin.H{
 		"状态":          "评论成功",
 		"评论者id":       cm.From_id,

@@ -31,3 +31,12 @@ func Personinfor(id int) (*Struct.Person, []string, []int) {
 	C := dao.QueryCooperation(id)
 	return M, P, C
 }
+
+func Checkmoviealiveser(id int) bool {
+	dao.OpenDb()
+	flag := dao.Querymovie(id)
+	if flag {
+		fmt.Println("未找到")
+	}
+	return flag
+}

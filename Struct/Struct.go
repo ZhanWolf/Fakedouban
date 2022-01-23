@@ -67,24 +67,24 @@ type Moviepic struct {
 }
 
 type Comment struct {
-	Id            int
-	From_id       int
-	From_username string
-	Content       string
-	Score         float64
-	Time          string
-	Useful        int
-	Unuseful      int
-	Movieid       int
-	Child         []Childcomment
+	Id            int            `json:"评论id"`
+	From_id       int            `json:"评论者id"`
+	From_username string         `json:"评论者用户名"`
+	Content       string         `json:"评论的内容"`
+	Score         float64        `json:"评论的分数"`
+	Time          string         `json:"评论的时间"`
+	Useful        int            `json:"有用数"`
+	Unuseful      int            `json:"无用数"`
+	Movieid       int            `json:"电影的id"`
+	Child         []Childcomment `json:"子评论"`
 }
 
 type Childcomment struct {
-	Id            int
-	Pid           int
-	From_id       int
-	From_username string
-	Content       string
-	Time          string
-	Useful        int
+	Id            int    `json:"子评论的id"`
+	Pid           int    `json:"父评论的id"`
+	From_id       int    `json:"评论者的id"`
+	From_username string `json:"评论者的用户名"`
+	Content       string `json:"评论的内容"`
+	Time          string `json:"评论的时间"`
+	Useful        int    `json:"感觉是否有用"`
 }

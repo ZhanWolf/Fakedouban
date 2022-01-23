@@ -14,7 +14,7 @@ func Setcomment(cm Struct.Comment, c *gin.Context) bool {
 		fmt.Println(err)
 		return false
 	}
-	flag := dao.Querymovie(cm.Id)
+	flag := dao.Querymovie(cm.Movieid)
 	if flag == false {
 		c.JSON(http.StatusOK, gin.H{
 			"状态":   "失败",

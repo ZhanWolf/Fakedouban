@@ -74,6 +74,7 @@ func Chcommentapi(c *gin.Context) {
 		"评论者id":       From_id,
 		"评论者username": From_username,
 		"评论内容":        Content,
+		"有用状态":        useful,
 	})
 }
 

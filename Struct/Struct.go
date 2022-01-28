@@ -1,7 +1,5 @@
 package Struct
 
-import "time"
-
 type User struct {
 	Id          int
 	Username    string
@@ -36,21 +34,23 @@ type Movie struct {
 	Date         string
 	Moviename    string
 	Score        float64
-	Actor        []int
-	Director     []int
-	Scriptwriter []int
+	Language     string
+	Length       string
+	Actor        []Actorinmovie
+	Director     []Actorinmovie
+	Scriptwriter []Actorinmovie
 }
 
 type Person struct {
 	Id             int
 	Introduction   string
-	Birthday       time.Time
+	Birthday       []uint8
 	Constellations string
 	Chinesename    string
 	Englishname    string
 	Birthplace     string
 	Jobs           string
-	Works          []int
+	Works          []Movieinactor
 	Poster         string
 }
 
@@ -87,4 +87,35 @@ type Childcomment struct {
 	Content       string `json:"评论的内容"`
 	Time          string `json:"评论的时间"`
 	Useful        int    `json:"感觉是否有用"`
+}
+
+type Actorinmovie struct {
+	Id   int
+	Name string
+	URl  string
+}
+
+type Movieinactor struct {
+	Id   int
+	Name string
+	URl  string
+}
+
+type Coperson struct {
+	Id   int
+	Name string
+	URL  string
+}
+
+type Shortcomment struct {
+	Id            int
+	From_id       int
+	From_username string
+	Content       string
+	Theday        string
+	Lorw          int
+	Score         float64
+	Usenum        int
+	Noues         int
+	Movie_id      int
 }

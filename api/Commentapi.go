@@ -83,3 +83,67 @@ func Listcommentapi(c *gin.Context) {
 	movieid2, _ := strconv.Atoi(movieid)
 	c.JSON(http.StatusOK, service.ListFilmcomment(movieid2))
 }
+
+func Shortcommentapi(c *gin.Context) {
+	From_username, _ := c.Cookie("now_user_login")
+	From_id, _ := dao.Queryusername(From_username)
+	if From_id == 0 {
+		fmt.Println("发生错误")
+		c.JSON(http.StatusOK, gin.H{
+			"状态": "失败",
+		})
+		return
+	}
+	content := c.PostForm("content")
+	lorw := c.PostForm("lorw")
+	lorw1, _ := strconv.Atoi(lorw)
+	score := c.PostForm("score")
+	score1, _ := strconv.ParseFloat(score, 64)
+	Movieid := c.PostForm("movieid")
+	Movieid2, _ := strconv.Atoi(Movieid)
+
+	service.Setshortcomment(From_username, From_id, content, lorw1, score1, Movieid2)
+	c.JSON(http.StatusOK, gin.H{
+		"状态":          "评论成功",
+		"评论者id":       From_id,
+		"评论者username": From_username,
+		"评论内容":        content,
+		"电影id":        Movieid2,
+		"评分":          score1,
+	})
+}
+
+func Listusecommentapi(c *gin.Context) {
+	movie_id := c.PostForm("movie_id")
+	movie_id2, _ := strconv.Atoi(movie_id)
+	cm := service.ListFlimcommentbyuse(movie_id2)
+	c.JSON(http.StatusOK, cm)
+}
+
+func Listtimecommentapi(c *gin.Context) {
+	movie_id := c.PostForm("movie_id")
+	movie_id2, _ := strconv.Atoi(movie_id)
+	cm := service.ListFlimcommentbytime(movie_id2)
+	c.JSON(http.StatusOK, cm)
+}
+
+func Listshortcommentapi(c *gin.Context) {
+	movie_id := c.PostForm("movie_id")
+	movie_id2, _ := strconv.Atoi(movie_id)
+	cm := service.ListFlimshortcommentbyuselimit(movie_id2)
+	c.JSON(http.StatusOK, cm)
+}
+
+func ListshortcommentapiBytime(c *gin.Context) {
+	movie_id := c.PostForm("movie_id")
+	movie_id2, _ := strconv.Atoi(movie_id)
+	cm := service.ListFilmshortcommentbytime(movie_id2)
+	c.JSON(http.StatusOK, cm)
+}
+
+func ListshortcommentapiByuse(c *gin.Context) {
+	movie_id := c.PostForm("movie_id")
+	movie_id2, _ := strconv.Atoi(movie_id)
+	cm := service.ListFilmshortcommentbyuse(movie_id2)
+	c.JSON(http.StatusOK, cm)
+}

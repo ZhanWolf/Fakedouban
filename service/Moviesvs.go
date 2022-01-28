@@ -6,7 +6,7 @@ import (
 	"message-board/dao"
 )
 
-func Movieinfor(id int) (*Struct.Movie, []string) {
+func Movieinfor(id int) *Struct.Movie {
 	err := dao.OpenDb()
 
 	if err != nil {
@@ -14,12 +14,11 @@ func Movieinfor(id int) (*Struct.Movie, []string) {
 	}
 
 	M := dao.QueryMovieimfor(id)
-	P := dao.QueryMoviepic2(id)
 
-	return M, P
+	return M
 }
 
-func Personinfor(id int) (*Struct.Person, []string, []int) {
+func Personinfor(id int) *Struct.Person {
 	err := dao.OpenDb()
 
 	if err != nil {
@@ -27,9 +26,8 @@ func Personinfor(id int) (*Struct.Person, []string, []int) {
 	}
 
 	M := dao.QueryPersonimfor(id)
-	P := dao.QueryPersonpic(id)
-	C := dao.QueryCooperation(id)
-	return M, P, C
+
+	return M
 }
 
 func Checkmoviealiveser(id int) bool {
@@ -39,4 +37,25 @@ func Checkmoviealiveser(id int) bool {
 		fmt.Println("未找到")
 	}
 	return flag
+}
+
+func Moviepicsvs(id int) []string {
+	dao.OpenDb()
+	P := dao.QueryMoviepic2(id)
+
+	return P
+}
+
+func Personpicsvs(id int) []string {
+	dao.OpenDb()
+	P := dao.QueryPersonpic(id)
+
+	return P
+}
+
+func Copersonsvs(id int) []Struct.Coperson {
+	dao.OpenDb()
+	C := dao.QueryCooperation(id)
+
+	return C
 }

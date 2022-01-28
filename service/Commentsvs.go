@@ -48,6 +48,75 @@ func ListFilmcomment(movieid int) []Struct.Comment {
 		fmt.Println(err)
 		return nil
 	}
+	cm := dao.QuerycommentwithoutChild(movieid)
+	return cm
+}
+
+func ListFlimcommentbytime(movieid int) []Struct.Comment {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
 	cm, _ := dao.Queryusermoviecm(movieid)
 	return cm
+}
+
+func ListFlimcommentbyuse(movieid int) []Struct.Comment {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	cm, _ := dao.QueryusermoviecmbyUse(movieid)
+	return cm
+}
+
+func ListFlimshortcommentbyuselimit(movieid int) []Struct.Shortcomment {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	cm := dao.QueryshortcommentbyUsebyLimit(movieid)
+	return cm
+}
+
+func ListFilmshortcommentbytime(movieid int) []Struct.Shortcomment {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	cm := dao.QueryshortcommentbyTime(movieid)
+	return cm
+}
+
+func ListFilmshortcommentbyuse(movieid int) []Struct.Shortcomment {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	cm := dao.QueryshortcommentbyUse(movieid)
+	return cm
+}
+
+func ListFlimcommentwihtchild(movieid int) []Struct.Comment {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	cm := dao.QuerycommentwithoutChild(movieid)
+	return cm
+}
+
+func Setshortcomment(fromusername string, fromuerid int, content string, lorw int, score float64, movieid int) {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	dao.Insertshortcomment(fromusername, fromuerid, content, lorw, score, movieid)
 }

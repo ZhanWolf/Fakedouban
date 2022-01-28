@@ -10,64 +10,78 @@ import (
 func QueryMovieimfor(id int) *Struct.Movie {
 
 	M := new(Struct.Movie)
-
-	err := Db.QueryRow("select pid,moviename,score,yyear,introduction,ddate,poster from movie where id = ?;", id).Scan(&M.Pid, &M.Moviename, &M.Score, &M.Year, &M.Introduction, &M.Date, &M.Poster)
+	var psid int
+	var persons Struct.Actorinmovie
+	var score1 float64
+	var score2 float64
+	err := Db.QueryRow("select pid,moviename,yyear,introduction,ddate,posterurl,length from movie where id = ?;", id).Scan(&M.Pid, &M.Moviename, &M.Year, &M.Introduction, &M.Date, &M.Poster, &M.Length)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
 	}
 
-	var personid int
-	sqlStr := "select personid from record_direct where pid =?;"
+	sqlStr := "select personid from record_direct where pid=?;"
 	rows, err := Db.Query(sqlStr, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
-
 	for rows.Next() {
-		err := rows.Scan(personid)
+		M.Director = make([]Struct.Actorinmovie, 1)
+		err := rows.Scan(psid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		M.Director = append(M.Director, personid)
+		Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(persons.Id, persons.Name, persons.URl)
+		M.Director = append(M.Director, persons)
 	}
-
-	sqlStr = "select personid from record_act where pid =?;"
-	rows, err = Db.Query(sqlStr, id)
+	sqlStr2 := "select personid from record_act where pid=?;"
+	rows2, err := Db.Query(sqlStr2, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
-
-	for rows.Next() {
-		err := rows.Scan(personid)
+	for rows2.Next() {
+		M.Actor = make([]Struct.Actorinmovie, 1)
+		err := rows2.Scan(psid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		M.Actor = append(M.Actor, personid)
+		Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(persons.Id, persons.Name, persons.URl)
+		M.Actor = append(M.Actor, persons)
 	}
-
-	sqlStr = "select personid from record_script where pid =?;"
-	rows, err = Db.Query(sqlStr, id)
+	sqlStr3 := "select personid from record_act where pid=?;"
+	rows3, err := Db.Query(sqlStr3, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
-
-	for rows.Next() {
-		err := rows.Scan(personid)
+	for rows3.Next() {
+		M.Scriptwriter = make([]Struct.Actorinmovie, 1)
+		err := rows3.Scan(psid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		M.Scriptwriter = append(M.Scriptwriter, personid)
+		Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(persons.Id, persons.Name, persons.URl)
+		M.Scriptwriter = append(M.Scriptwriter, persons)
 	}
-
-	rows.Close()
-
+	M.Director = M.Director[1:]
+	M.Actor = M.Actor[1:]
+	M.Scriptwriter = M.Scriptwriter[1:]
+	err = Db.QueryRow("select AVG(score) from comment where movie_id = ?;", id).Scan(&score1)
+	if err != nil {
+		M.Score = 0.0
+		return M
+	}
+	err = Db.QueryRow("select AVG(score) from shortcomment where movie_id = ?;", id).Scan(&score2)
+	if err != nil {
+		M.Score = 0.0
+		return M
+	}
+	M.Score = (score2 + score1)
 	return M
 }
 
@@ -101,53 +115,56 @@ func QueryMoviepic(id int, c *gin.Context) {
 
 func QueryPersonimfor(id int) *Struct.Person {
 	P := new(Struct.Person)
-	err := Db.QueryRow("select introduction,birthday,Constellations,chinesename,englishname,birthplace,jobs,works,poster from person where id = ?;", id).Scan(&P.Introduction, &P.Birthday, &P.Constellations, &P.Chinesename, &P.Englishname, &P.Birthplace, &P.Jobs, &P.Jobs, &P.Works, &P.Poster)
+	var mvid int
+	var mvs Struct.Movieinactor
+	err := Db.QueryRow("select introduction,birthday,Constellations,chinesename,englishname,birthplace,jobs,posterurl from person where id = ?;", id).Scan(&P.Introduction, &P.Birthday, &P.Constellations, &P.Chinesename, &P.Englishname, &P.Birthplace, &P.Jobs, &P.Jobs, &P.Works, &P.Poster)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
 	}
 
-	var personid int
-	sqlStr := "select pid from record_direct where personid =?;"
+	sqlStr := "select personid from record_direct where pid=?;"
 	rows, err := Db.Query(sqlStr, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
-
 	for rows.Next() {
-		err := rows.Scan(personid)
+		P.Works = make([]Struct.Movieinactor, 1)
+		err := rows.Scan(mvid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		P.Works = append(P.Works, personid)
+		Db.QueryRow("select id,chinesename,URL from person where id=?;", mvid).Scan(mvs.Id, mvs.Name, mvs.URl)
+		P.Works = append(P.Works, mvs)
 	}
+	P.Works = P.Works[1:]
 	return P
 }
 
-func QueryCooperation(id int) []int {
-	copersonidslice := make([]int, 0)
+func QueryCooperation(id int) []Struct.Coperson {
 	var copersonid int
-	sqlStr := "select personid from record_all where personid in (select personid from record_all where pid in(select pid from record_all where id=?)) and  personid in (select personid from record_all group by personid having count(personid)>2);"
+	sqlStr := "select personid from record_all where personid in (select personid from record_all where pid in(select pid from record_all where personid=?)) and  personid in (select personid from record_all group by personid having count(personid)>2);"
 	rows, err := Db.Query(sqlStr, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
-
+	Coperson := make([]Struct.Coperson, 1)
+	var Coperson2 Struct.Coperson
 	for rows.Next() {
 		err := rows.Scan(copersonid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		copersonidslice = append(copersonidslice, copersonid)
-
+		Db.QueryRow("select id,chinesename,URL from person where id=?;", copersonid).Scan(Coperson2.Id, Coperson2.Name, Coperson2.URL)
+		Coperson = append(Coperson, Coperson2)
 	}
-
+	Coperson = Coperson[1:]
 	rows.Close()
-	return copersonidslice
+	return Coperson
 }
 
 func QueryMoviepic2(id int) []string {

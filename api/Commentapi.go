@@ -102,7 +102,7 @@ func Shortcommentapi(c *gin.Context) {
 	Movieid := c.PostForm("movieid")
 	Movieid2, _ := strconv.Atoi(Movieid)
 
-	service.Setshortcomment(From_username, From_id, content, lorw1, score1, Movieid2)
+	service.Setshortcomment(From_username, From_id, content, lorw1, score1, Movieid2, c)
 	c.JSON(http.StatusOK, gin.H{
 		"状态":          "评论成功",
 		"评论者id":       From_id,

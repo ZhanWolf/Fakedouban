@@ -112,10 +112,18 @@ func ListFlimcommentwihtchild(movieid int) []Struct.Comment {
 	return cm
 }
 
-func Setshortcomment(fromusername string, fromuerid int, content string, lorw int, score float64, movieid int) {
+func Setshortcomment(fromusername string, fromuerid int, content string, lorw int, score float64, movieid int, c *gin.Context) {
 	err := dao.OpenDb()
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+	flag := dao.Querymovie(movieid)
+	if flag == false {
+		c.JSON(http.StatusOK, gin.H{
+			"状态":   "失败",
+			"可能原因": "没有该电影",
+		})
 		return
 	}
 	dao.Insertshortcomment(fromusername, fromuerid, content, lorw, score, movieid)

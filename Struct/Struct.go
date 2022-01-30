@@ -36,6 +36,10 @@ type Movie struct {
 	Score        float64
 	Language     string
 	Length       string
+	Area         string
+	Type         string
+	Feature      string
+	Releasing    bool
 	Actor        []Actorinmovie
 	Director     []Actorinmovie
 	Scriptwriter []Actorinmovie

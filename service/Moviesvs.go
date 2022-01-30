@@ -12,9 +12,8 @@ func Movieinfor(id int) *Struct.Movie {
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	dao.Scoredao(id)
 	M := dao.QueryMovieimfor(id)
-
 	return M
 }
 
@@ -33,8 +32,9 @@ func Personinfor(id int) *Struct.Person {
 func Checkmoviealiveser(id int) bool {
 	dao.OpenDb()
 	flag := dao.Querymovie(id)
-	if flag {
+	if flag == false {
 		fmt.Println("未找到")
+		return flag
 	}
 	return flag
 }
@@ -58,4 +58,23 @@ func Copersonsvs(id int) []Struct.Coperson {
 	C := dao.QueryCooperation(id)
 
 	return C
+}
+
+func HotMovieinfor() []Struct.Movie {
+	err := dao.OpenDb()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	M := dao.QueryHotmovie()
+	return M
+}
+
+func RealeasingMovieinfor() []Struct.Movie {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+	}
+	M := dao.QueryReleasingmovie()
+	return M
 }

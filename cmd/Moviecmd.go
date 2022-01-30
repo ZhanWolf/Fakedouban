@@ -8,7 +8,7 @@ import (
 func Movieroute(r *gin.Engine) {
 	r.GET("/object", api.Movieimforapi, api.Moviepicapi, api.Listcommentapi, api.Listshortcommentapi)
 	r.GET("/celebrity", api.Personapi, api.Personpic, api.Coperson)
-
+	r.GET("/recommend", api.RealeasingMovieimforapi, api.HotMovieimforapi)
 }
 
 func Moviecommentroute(r *gin.Engine) {

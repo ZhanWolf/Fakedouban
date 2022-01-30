@@ -11,10 +11,14 @@ func Movieimforapi(c *gin.Context) {
 	movieid := c.Query("movie_id")
 
 	movieid2, _ := strconv.Atoi(movieid)
+	flag := service.Checkmoviealiveser(movieid2)
+	if flag == false {
+		c.JSON(http.StatusOK, "未找到该电影")
+		return
+	}
 	M := service.Movieinfor(movieid2)
 
 	c.JSON(http.StatusOK, M)
-
 }
 
 func Personapi(c *gin.Context) {
@@ -48,5 +52,14 @@ func Coperson(c *gin.Context) {
 	movieid2, _ := strconv.Atoi(movieid)
 	M := service.Copersonsvs(movieid2)
 
+	c.JSON(http.StatusOK, M)
+}
+
+func HotMovieimforapi(c *gin.Context) {
+	M := service.HotMovieinfor()
+	c.JSON(http.StatusOK, M)
+}
+func RealeasingMovieimforapi(c *gin.Context) {
+	M := service.RealeasingMovieinfor()
 	c.JSON(http.StatusOK, M)
 }

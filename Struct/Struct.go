@@ -39,6 +39,7 @@ type Movie struct {
 	Area         string
 	Type         string
 	Feature      string
+	URL          string
 	Releasing    bool
 	Actor        []Actorinmovie
 	Director     []Actorinmovie
@@ -48,12 +49,13 @@ type Movie struct {
 type Person struct {
 	Id             int
 	Introduction   string
-	Birthday       []uint8
+	Birthday       string
 	Constellations string
 	Chinesename    string
 	Englishname    string
 	Birthplace     string
 	Jobs           string
+	URl            string
 	Works          []Movieinactor
 	Poster         string
 }

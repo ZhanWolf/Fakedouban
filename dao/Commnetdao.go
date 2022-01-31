@@ -9,6 +9,7 @@ import (
 func Insertcomment(cm Struct.Comment) error {
 	time := time.Now()
 	_, err := Db.Exec("insert into comment(from_username, from_id, Content, theday, usenum, unusenum, score,movie_id) values(?,?,?,?,0,0,?,?);", cm.From_username, cm.From_id, cm.Content, time, cm.Score, cm.Movieid)
+	Scoredao(cm.Movieid)
 	return err
 }
 
@@ -181,6 +182,7 @@ func Insertshortcomment(from_username string, from_id int, content string, lorw 
 		fmt.Println(err)
 		return false
 	}
+	Scoredao(movie_id)
 	return true
 }
 
@@ -275,4 +277,25 @@ func QuerycommentwithoutChild(movieid int) []Struct.Comment {
 	cm = cm[1:]
 	return cm
 
+}
+
+func Scoredao(id int) {
+	var score1 float64
+	var score2 float64
+	err := Db.QueryRow("select AVG(score) from comment where movie_id = ?;", id).Scan(&score1)
+	if err != nil {
+		score1 = 0.0
+		return
+	}
+	err = Db.QueryRow("select AVG(score) from shortcomment where movie_id = ?;", id).Scan(&score2)
+	if err != nil {
+		score2 = 0.0
+		return
+	}
+	Score := (score2 + score1) / 2
+	err2, _ := Db.Exec("update movie set score=? where id =?", Score, id)
+	if err2 != nil {
+		fmt.Println(err2)
+		return
+	}
 }

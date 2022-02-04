@@ -125,3 +125,41 @@ type Shortcomment struct {
 	Noues         int
 	Movie_id      int
 }
+
+type Userimfor struct {
+	Id           int
+	Username     int
+	Introduction int
+	Scm          []Scminuser
+	Cm           []Cminuser
+}
+
+type Scminuser struct {
+	Id            int
+	From_id       int
+	From_username string
+	Content       string
+	Theday        string
+	Lorw          int
+	Score         float64
+	Usenum        int
+	Noues         int
+	Movie_id      int
+	Movieurl      string
+	Moviename     string
+}
+
+type Cminuser struct {
+	Id            int            `json:"评论id"`
+	From_id       int            `json:"评论者id"`
+	From_username string         `json:"评论者用户名"`
+	Content       string         `json:"评论的内容"`
+	Score         float64        `json:"评论的分数"`
+	Time          string         `json:"评论的时间"`
+	Useful        int            `json:"有用数"`
+	Unuseful      int            `json:"无用数"`
+	Movieid       int            `json:"电影的id"`
+	Child         []Childcomment `json:"子评论"`
+	Movieurl      string
+	Moviename     string
+}

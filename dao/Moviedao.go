@@ -449,3 +449,147 @@ func QueryNewhotmovie() []Struct.Movie {
 	M1 = M1[1:]
 	return M1
 }
+
+func Classificationmovie(ty string, area string, year int, feature string) []Struct.Movie {
+	M1 := make([]Struct.Movie, 1)
+	var M Struct.Movie
+	var psid int
+	var persons Struct.Actorinmovie
+	var time1 []uint8
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie where type=? or area=? or feature =? or yyear=?;"
+	rows0, err := Db.Query(sqlStr0, ty, area, feature, year)
+	if err != nil {
+		fmt.Printf("query failed, err:%v\n", err)
+		return nil
+	}
+	for rows0.Next() {
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score)
+		sqlStr := "select personid from record_direct where pid=?;"
+		rows, err := Db.Query(sqlStr, M.Id)
+		if err != nil {
+			fmt.Printf("query failed, err:%v\n", err)
+			return nil
+		}
+		M.Date = utos(time1)
+		for rows.Next() {
+			M.Director = make([]Struct.Actorinmovie, 1)
+			err := rows.Scan(&psid)
+			if err != nil {
+				fmt.Printf("scan failed, err:%v\n", err)
+				return nil
+			}
+			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			M.Director = append(M.Director, persons)
+		}
+		sqlStr2 := "select personid from record_act where pid=?;"
+		rows2, err := Db.Query(sqlStr2, M.Id)
+		if err != nil {
+			fmt.Printf("query failed, err:%v\n", err)
+			return nil
+		}
+		for rows2.Next() {
+			M.Actor = make([]Struct.Actorinmovie, 1)
+			err := rows2.Scan(&psid)
+			if err != nil {
+				fmt.Printf("scan failed, err:%v\n", err)
+				return nil
+			}
+			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			M.Actor = append(M.Actor, persons)
+		}
+		sqlStr3 := "select personid from record_act where pid=?;"
+		rows3, err := Db.Query(sqlStr3, M.Id)
+		if err != nil {
+			fmt.Printf("query failed, err:%v\n", err)
+			return nil
+		}
+		for rows3.Next() {
+			M.Scriptwriter = make([]Struct.Actorinmovie, 1)
+			err := rows3.Scan(&psid)
+			if err != nil {
+				fmt.Printf("scan failed, err:%v\n", err)
+				return nil
+			}
+			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			M.Scriptwriter = append(M.Scriptwriter, persons)
+		}
+		M.Director = M.Director[1:]
+		M.Actor = M.Actor[1:]
+		M.Scriptwriter = M.Scriptwriter[1:]
+		M1 = append(M1, M)
+	}
+	M1 = M1[1:]
+	return M1
+}
+
+func ClassificationListmovie(ty string, area string, year int, feature string) []Struct.Movie {
+	M1 := make([]Struct.Movie, 1)
+	var M Struct.Movie
+	var psid int
+	var persons Struct.Actorinmovie
+	var time1 []uint8
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie where type=? or area=? or feature =? or yyear=? order by score desc ;"
+	rows0, err := Db.Query(sqlStr0, ty, area, feature, year)
+	if err != nil {
+		fmt.Printf("query failed, err:%v\n", err)
+		return nil
+	}
+	for rows0.Next() {
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score)
+		sqlStr := "select personid from record_direct where pid=?;"
+		rows, err := Db.Query(sqlStr, M.Id)
+		if err != nil {
+			fmt.Printf("query failed, err:%v\n", err)
+			return nil
+		}
+		M.Date = utos(time1)
+		for rows.Next() {
+			M.Director = make([]Struct.Actorinmovie, 1)
+			err := rows.Scan(&psid)
+			if err != nil {
+				fmt.Printf("scan failed, err:%v\n", err)
+				return nil
+			}
+			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			M.Director = append(M.Director, persons)
+		}
+		sqlStr2 := "select personid from record_act where pid=?;"
+		rows2, err := Db.Query(sqlStr2, M.Id)
+		if err != nil {
+			fmt.Printf("query failed, err:%v\n", err)
+			return nil
+		}
+		for rows2.Next() {
+			M.Actor = make([]Struct.Actorinmovie, 1)
+			err := rows2.Scan(&psid)
+			if err != nil {
+				fmt.Printf("scan failed, err:%v\n", err)
+				return nil
+			}
+			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			M.Actor = append(M.Actor, persons)
+		}
+		sqlStr3 := "select personid from record_act where pid=?;"
+		rows3, err := Db.Query(sqlStr3, M.Id)
+		if err != nil {
+			fmt.Printf("query failed, err:%v\n", err)
+			return nil
+		}
+		for rows3.Next() {
+			M.Scriptwriter = make([]Struct.Actorinmovie, 1)
+			err := rows3.Scan(&psid)
+			if err != nil {
+				fmt.Printf("scan failed, err:%v\n", err)
+				return nil
+			}
+			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			M.Scriptwriter = append(M.Scriptwriter, persons)
+		}
+		M.Director = M.Director[1:]
+		M.Actor = M.Actor[1:]
+		M.Scriptwriter = M.Scriptwriter[1:]
+		M1 = append(M1, M)
+	}
+	M1 = M1[1:]
+	return M1
+}

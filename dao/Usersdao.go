@@ -27,7 +27,7 @@ func Queryusername(username string) (int, error) {
 }
 
 func Insertuser(username string, password string, protectionQ string, protectionA string) error {
-	_, err := Db.Exec("insert into user(username,password,protectionQ,protectionA) values (?,?,?,?);", username, password, protectionQ, protectionA)
+	_, err := Db.Exec("insert into user(username,password,protectionQ,protectionA,introduction) values (?,?,?,?);", username, password, protectionQ, protectionA)
 	if err != nil {
 		fmt.Println("插入错误", err)
 	}
@@ -46,4 +46,110 @@ func Queryprotection(username string) (string, string) {
 		fmt.Println(err)
 	}
 	return U.ProtectionQ, U.ProtectionA
+}
+
+func UpdateIntroduction(introduction string) {
+	_, err := Db.Exec("update  user set introduction=? ;", introduction)
+	if err != nil {
+		fmt.Println("插入错误", err)
+	}
+
+	return
+}
+
+func QueryUserscm(from_id int) []Struct.Scminuser {
+	scm := make([]Struct.Scminuser, 1)
+	var scm1 Struct.Scminuser
+	var time1 []uint8
+	sqlStr := "select id, from_username, from_id, content, theday, lorw, score, usenum, nouse, movie_id from shortcomment where from_id = ? order by theday desc ;" //遍历写给登录用户的评论
+	rows, err := Db.Query(sqlStr, from_id)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for rows.Next() {
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &scm1.Theday, &scm1.Score, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
+		if err != nil {
+			fmt.Printf("scan failed, err:%v\n", err)
+			return nil
+		}
+		scm1.Theday = utos(time1)
+		Db.QueryRow("select moviename,URL from movie where id =?", scm1.Movie_id).Scan(&scm1.Moviename, &scm1.Movieurl)
+		scm = append(scm, scm1)
+	}
+	scm = scm[1:]
+	return scm
+}
+
+func QueryUsercm(from_id int) []Struct.Cminuser {
+	scm := make([]Struct.Cminuser, 1)
+	var scm1 Struct.Cminuser
+	var time1 []uint8
+	sqlStr := "select id, from_username, from_id, content, theday, score, usenum, unusenum, movie_id from comment where from_id = ? order by theday desc ;" //遍历写给登录用户的评论
+	rows, err := Db.Query(sqlStr, from_id)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for rows.Next() {
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &scm1.Time, &scm1.Score, &scm1.Useful, &scm1.Unuseful, &scm1.Movieid)
+		if err != nil {
+			fmt.Printf("scan failed, err:%v\n", err)
+			return nil
+		}
+		scm1.Time = utos(time1)
+		Db.QueryRow("select moviename,URL from movie where id =?", scm1.Movieid).Scan(&scm1.Moviename, &scm1.Movieurl)
+		scm = append(scm, scm1)
+	}
+	scm = scm[1:]
+	return scm
+}
+
+func Looked(from_id int) []Struct.Movie {
+	var movieid int
+	var Movie Struct.Movie
+	Movieslice := make([]Struct.Movie, 1)
+	sqlStr := "select movie_id from shortcomment where from_id = ? and lorw = 1;" //遍历写给登录用户的评论
+	rows, err := Db.Query(sqlStr, from_id)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for rows.Next() {
+		err := rows.Scan(&movieid)
+		if err != nil {
+			fmt.Printf("scan failed, err:%v\n", err)
+			return nil
+		}
+		Db.QueryRow("select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Pid, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
+		Movieslice = append(Movieslice, Movie)
+	}
+	Movieslice = Movieslice[1:]
+	return Movieslice
+
+}
+
+func Wanted(from_id int) []Struct.Movie {
+	var movieid int
+	var Movie Struct.Movie
+	Movieslice := make([]Struct.Movie, 1)
+	sqlStr := "select movie_id from shortcomment where from_id = ? and lorw = 0;"
+	rows, err := Db.Query(sqlStr, from_id)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for rows.Next() {
+		err := rows.Scan(&movieid)
+		if err != nil {
+			fmt.Printf("scan failed, err:%v\n", err)
+			return nil
+		}
+
+		Db.QueryRow("select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Pid, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
+		Movieslice = append(Movieslice, Movie)
+	}
+	Movieslice = Movieslice[1:]
+	return Movieslice
+
 }

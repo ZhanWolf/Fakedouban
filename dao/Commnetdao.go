@@ -197,7 +197,7 @@ func QueryshortcommentbyTime(movieid int) []Struct.Shortcomment {
 		return nil
 	}
 	for rows.Next() {
-		err := rows.Scan(scm1.Id, scm1.From_username, scm1.From_id, scm1.Content, time1, scm1.Usenum, scm1.Noues, scm1.Movie_id)
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -220,7 +220,7 @@ func QueryshortcommentbyUse(movieid int) []Struct.Shortcomment {
 		return nil
 	}
 	for rows.Next() {
-		err := rows.Scan(scm1.Id, scm1.From_username, scm1.From_id, scm1.Content, time1, scm1.Usenum, scm1.Noues, scm1.Movie_id)
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -243,7 +243,7 @@ func QueryshortcommentbyUsebyLimit(movieid int) []Struct.Shortcomment {
 		return nil
 	}
 	for rows.Next() {
-		err := rows.Scan(scm1.Id, scm1.From_username, scm1.From_id, scm1.Content, time1, scm1.Usenum, scm1.Noues, scm1.Movie_id)
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -266,7 +266,7 @@ func QuerycommentwithoutChild(movieid int) []Struct.Comment {
 		return nil
 	}
 	for rows.Next() {
-		err := rows.Scan(cm1.Id, cm1.From_username, cm1.From_id, cm1.Content, time1, cm1.Useful, cm1.Unuseful, cm1.Score, cm1.Movieid)
+		err := rows.Scan(&cm1.Id, &cm1.From_username, &cm1.From_id, &cm1.Content, &time1, &cm1.Useful, &cm1.Unuseful, &cm1.Score, &cm1.Movieid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil

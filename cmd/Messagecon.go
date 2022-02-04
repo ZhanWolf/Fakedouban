@@ -1,10 +1,5 @@
 package cmd
 
-import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-)
-
 /*func Messageroute(r *gin.Engine) {
 	ms := r.Group("/message", cookie)
 	{
@@ -20,15 +15,3 @@ import (
 		ms.POST("/likes", api.Likes)
 	}
 }*/
-
-func cookie(c *gin.Context) {
-	ck, err := c.Cookie("now_user_login")
-	if err != nil {
-		fmt.Println(err)
-		c.JSON(403, "未登录")
-		c.Abort()
-	} else {
-		c.Set("cookie", ck)
-		c.Next()
-	}
-}

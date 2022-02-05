@@ -78,3 +78,39 @@ func RealeasingMovieinfor() []Struct.Movie {
 	M := dao.QueryReleasingmovie()
 	return M
 }
+
+func RecommendMovieinfor() []Struct.Movie {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+	}
+	M := dao.QueryNewhotmovie()
+	return M
+}
+
+func ClassHotMovieinfor(ty string, area string, yaer string, feature string) []Struct.Movie {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+	}
+	M := dao.ClassificationListmovie(ty, area, yaer, feature)
+	return M
+}
+
+func ClassMovieinfor(ty string, area string, yaer string, feature string) []Struct.Movie {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+	}
+	M := dao.Classificationmovie(ty, area, yaer, feature)
+	return M
+}
+
+func Qerymovie(stuff string) ([]Struct.Movie, []Struct.Person) {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+	}
+	M, P := dao.Querystuff(stuff)
+	return M, P
+}

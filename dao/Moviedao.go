@@ -3,6 +3,7 @@ package dao
 import (
 	"fmt"
 	"message-board/Struct"
+	"strconv"
 	"time"
 )
 
@@ -450,14 +451,21 @@ func QueryNewhotmovie() []Struct.Movie {
 	return M1
 }
 
-func Classificationmovie(ty string, area string, year int, feature string) []Struct.Movie {
+func Classificationmovie(ty string, area string, year string, feature string) []Struct.Movie {
 	M1 := make([]Struct.Movie, 1)
 	var M Struct.Movie
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
+	var year3 interface{}
+	year2, err := strconv.Atoi(year)
+	if err != nil {
+		fmt.Println(err)
+		year3 = "all"
+	}
+	year3 = year2
 	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie where type=? or area=? or feature =? or yyear=?;"
-	rows0, err := Db.Query(sqlStr0, ty, area, feature, year)
+	rows0, err := Db.Query(sqlStr0, ty, area, feature, year3)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
@@ -522,14 +530,21 @@ func Classificationmovie(ty string, area string, year int, feature string) []Str
 	return M1
 }
 
-func ClassificationListmovie(ty string, area string, year int, feature string) []Struct.Movie {
+func ClassificationListmovie(ty string, area string, year string, feature string) []Struct.Movie {
 	M1 := make([]Struct.Movie, 1)
 	var M Struct.Movie
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
+	var year3 interface{}
+	year2, err := strconv.Atoi(year)
+	if err != nil {
+		fmt.Println(err)
+		year3 = "all"
+	}
+	year3 = year2
 	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie where type=? or area=? or feature =? or yyear=? order by score desc ;"
-	rows0, err := Db.Query(sqlStr0, ty, area, feature, year)
+	rows0, err := Db.Query(sqlStr0, ty, area, feature, year3)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil

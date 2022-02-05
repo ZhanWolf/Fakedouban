@@ -82,6 +82,7 @@ func Listcommentapi(c *gin.Context) {
 	movieid := c.Query("movieid")
 	movieid2, _ := strconv.Atoi(movieid)
 	c.JSON(http.StatusOK, service.ListFilmcomment(movieid2))
+	c.Next()
 }
 
 func Shortcommentapi(c *gin.Context) {

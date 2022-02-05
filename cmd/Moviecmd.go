@@ -19,7 +19,7 @@ func Moviecommentroute(r *gin.Engine) {
 		cm.POST("/shortcomment", api.Shortcommentapi)
 		cm.GET("/shortbytime", api.ListshortcommentapiBytime)
 		cm.GET("/shortbyuse", api.ListshortcommentapiByuse)
-		cm.GET("/commentbyuse", api.ListshortcommentapiBytime)
+		cm.GET("/commentbyuse", api.Listusecommentapi)
 		cm.GET("/commentbytime", api.Listtimecommentapi)
 	}
 }

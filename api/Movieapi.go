@@ -19,6 +19,7 @@ func Movieimforapi(c *gin.Context) {
 	M := service.Movieinfor(movieid2)
 
 	c.JSON(http.StatusOK, M)
+	c.Next()
 }
 
 func Personapi(c *gin.Context) {
@@ -35,6 +36,7 @@ func Moviepicapi(c *gin.Context) {
 	movieid2, _ := strconv.Atoi(movieid)
 	M := service.Moviepicsvs(movieid2)
 	c.JSON(http.StatusOK, M)
+	c.Next()
 }
 
 func Personpic(c *gin.Context) {

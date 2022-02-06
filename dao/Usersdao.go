@@ -48,13 +48,22 @@ func Queryprotection(username string) (string, string) {
 	return U.ProtectionQ, U.ProtectionA
 }
 
-func UpdateIntroduction(introduction string) {
-	_, err := Db.Exec("update  user set introduction=? ;", introduction)
+func UpdateIntroduction(introduction string, id int) {
+	_, err := Db.Exec("update  user set introduction=? where id =?;", introduction, id)
 	if err != nil {
 		fmt.Println("插入错误", err)
 	}
 
 	return
+}
+func Queryintroducton(from_id int) (string, error) {
+	var introduction string
+	err := Db.QueryRow("select introduction from user where id=?", from_id).Scan(introduction)
+	if err != nil {
+		fmt.Println(err)
+		return " ", err
+	}
+	return introduction, nil
 }
 
 func QueryUserscm(from_id int) []Struct.Scminuser {

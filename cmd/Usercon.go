@@ -13,6 +13,8 @@ func Userroute(r *gin.Engine) {
 		us.POST("/Singup", api.Singup)
 		us.POST("/Reset", api.Reset)
 		us.GET("/clock", cookie, api.Clock)
+		us.GET("/imfor", cookie, api.Userimfor)
+		us.POST("/change", cookie, api.Setuserintroduction)
 	}
 }
 

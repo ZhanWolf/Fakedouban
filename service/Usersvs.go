@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"message-board/Struct"
 	"message-board/dao"
 	"net/http"
 )
@@ -74,5 +75,36 @@ func PasswordReset(c *gin.Context, username string, password string, protectionA
 	} else if trueprotectionA != protectionA {
 		c.JSON(http.StatusOK, "密保答案错误")
 	}
+
+}
+
+func Listuserimfor(username string, c *gin.Context) Struct.Userimfor {
+	dao.OpenDb()
+	var U Struct.Userimfor
+	var err error
+	U.Id, err = dao.Queryusername(username)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusOK, "无此用户")
+		return U
+	}
+	U.Username = username
+	U.Introduction, err = dao.Queryintroducton(U.Id)
+	U.Cm = dao.QueryUsercm(U.Id)
+	U.Scm = dao.QueryUserscm(U.Id)
+	U.Looked = dao.Looked(U.Id)
+	U.Wanted = dao.Wanted(U.Id)
+	return U
+}
+
+func Setintroduction(username string, introduction string) error {
+	dao.OpenDb()
+	Id, err := dao.Queryusername(username)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	dao.UpdateIntroduction(introduction, Id)
+	return nil
 
 }

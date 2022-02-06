@@ -89,5 +89,20 @@ func Clock(c *gin.Context) {
 		"hello": username,
 		"现在时间":  time.Now(),
 	})
+}
 
+func Userimfor(c *gin.Context) {
+	username, _ := c.Cookie("now_user_login")
+	U := service.Listuserimfor(username, c)
+	c.JSON(http.StatusOK, U)
+}
+
+func Setuserintroduction(c *gin.Context) {
+	username, _ := c.Cookie("now_user_login")
+	introduction := c.PostForm("introduction")
+	err := service.Setintroduction(username, introduction)
+	if err != nil {
+		c.JSON(http.StatusOK, "修改信息失败")
+	}
+	c.JSON(http.StatusOK, "修改信息成功")
 }

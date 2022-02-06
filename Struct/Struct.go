@@ -128,10 +128,12 @@ type Shortcomment struct {
 
 type Userimfor struct {
 	Id           int
-	Username     int
-	Introduction int
+	Username     string
+	Introduction string
 	Scm          []Scminuser
 	Cm           []Cminuser
+	Looked       []Movie
+	Wanted       []Movie
 }
 
 type Scminuser struct {

@@ -75,7 +75,6 @@ func PasswordReset(c *gin.Context, username string, password string, protectionA
 	} else if trueprotectionA != protectionA {
 		c.JSON(http.StatusOK, "密保答案错误")
 	}
-
 }
 
 func Listuserimfor(username string, c *gin.Context) Struct.Userimfor {

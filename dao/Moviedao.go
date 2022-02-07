@@ -13,7 +13,7 @@ func QueryMovieimfor(id int) *Struct.Movie {
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
-	err := Db.QueryRow("select pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie where id = ?;", id).Scan(&M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score)
+	err := Db.QueryRow("select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie where id = ?;", id).Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
@@ -25,9 +25,9 @@ func QueryMovieimfor(id int) *Struct.Movie {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
+	M.Director = make([]Struct.Actorinmovie, 1)
 	for rows.Next() {
-		M.Director = make([]Struct.Actorinmovie, 1)
-		err := rows.Scan(psid)
+		err := rows.Scan(&psid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -41,8 +41,8 @@ func QueryMovieimfor(id int) *Struct.Movie {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
+	M.Actor = make([]Struct.Actorinmovie, 1)
 	for rows2.Next() {
-		M.Actor = make([]Struct.Actorinmovie, 1)
 		err := rows2.Scan(psid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
@@ -57,8 +57,8 @@ func QueryMovieimfor(id int) *Struct.Movie {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
+	M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 	for rows3.Next() {
-		M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 		err := rows3.Scan(psid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
@@ -78,26 +78,26 @@ func QueryPersonimfor(id int) *Struct.Person {
 	var mvid int
 	var mvs Struct.Movieinactor
 	var time1 []uint8
-	err := Db.QueryRow("select introduction,birthday,Constellations,chinesename,englishname,birthplace,jobs,posterurl from person where id = ?;", id).Scan(&P.Introduction, &time1, &P.Constellations, &P.Chinesename, &P.Englishname, &P.Birthplace, &P.Jobs, &P.Jobs, &P.Works, &P.Poster)
+	err := Db.QueryRow("select id,introduction,birthday,Constellations,chinesename,englishname,birthplace,jobs,posterurl,URL from person where id = ?;", id).Scan(&P.Id, &P.Introduction, &time1, &P.Constellations, &P.Chinesename, &P.Englishname, &P.Birthplace, &P.Jobs, &P.Poster, &P.URl)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
 	}
 	P.Birthday = utos(time1)
-	sqlStr := "select personid from record_direct where pid=?;"
+	sqlStr := "select pid from record_all where personid=?;"
 	rows, err := Db.Query(sqlStr, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
+	P.Works = make([]Struct.Movieinactor, 1)
 	for rows.Next() {
-		P.Works = make([]Struct.Movieinactor, 1)
-		err := rows.Scan(mvid)
+		err := rows.Scan(&mvid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		Db.QueryRow("select id,chinesename,URL from person where id=?;", mvid).Scan(mvs.Id, mvs.Name, mvs.URl)
+		Db.QueryRow("select id,moviename,URL from movie where id=?;", mvid).Scan(&mvs.Id, &mvs.Name, &mvs.URl)
 		P.Works = append(P.Works, mvs)
 	}
 	P.Works = P.Works[1:]
@@ -106,8 +106,9 @@ func QueryPersonimfor(id int) *Struct.Person {
 
 func QueryCooperation(id int) []Struct.Coperson {
 	var copersonid int
-	sqlStr := "select personid from record_all where personid in (select personid from record_all where pid in(select pid from record_all where personid=?)) and  personid in (select personid from record_all group by personid having count(personid)>2);"
-	rows, err := Db.Query(sqlStr, id)
+	sqlStr := "select personid from record_all where personid in (select personid from record_all where pid in(select pid from record_all where personid=?)) and  personid in (select personid from record_all group by personid having count(personid)>2) and personid<>?;"
+	rows, err := Db.Query(sqlStr, id, id)
+	copersonidslice := make([]int, 0)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
@@ -115,17 +116,36 @@ func QueryCooperation(id int) []Struct.Coperson {
 	Coperson := make([]Struct.Coperson, 1)
 	var Coperson2 Struct.Coperson
 	for rows.Next() {
-		err := rows.Scan(copersonid)
+		err := rows.Scan(&copersonid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		Db.QueryRow("select id,chinesename,URL from person where id=?;", copersonid).Scan(&Coperson2.Id, &Coperson2.Name, &Coperson2.URL)
+		copersonidslice = append(copersonidslice, copersonid)
+	}
+	copersonidslice = removeDuplicateValues(copersonidslice)
+	for i := 0; i < len(copersonidslice); i++ {
+		Db.QueryRow("select id,chinesename,URL from person where id =?", copersonidslice[i]).Scan(&Coperson2.Id, &Coperson2.Name, &Coperson2.URL)
 		Coperson = append(Coperson, Coperson2)
 	}
 	Coperson = Coperson[1:]
 	rows.Close()
 	return Coperson
+}
+
+func removeDuplicateValues(intSlice []int) []int {
+	keys := make(map[int]bool)
+	list := []int{}
+	// If the key(values of the slice) is not equal
+	// to the already present value in new slice (list)
+	// then we append it. else we jump on another element.
+	for _, entry := range intSlice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }
 
 func QueryMoviepic2(id int) []string {
@@ -192,15 +212,14 @@ func QueryReleasingmovie() []Struct.Movie {
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
-	t1 := time.Now()
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie where releasing<>0;"
-	rows0, err := Db.Query(sqlStr0, t1)
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,URL from movie where releasing = 1;"
+	rows0, err := Db.Query(sqlStr0)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.URL)
 		M.Date = utos(time1)
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
@@ -208,9 +227,9 @@ func QueryReleasingmovie() []Struct.Movie {
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Director = make([]Struct.Actorinmovie, 1)
 		for rows.Next() {
-			M.Director = make([]Struct.Actorinmovie, 1)
-			err := rows.Scan(psid)
+			err := rows.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
@@ -224,8 +243,8 @@ func QueryReleasingmovie() []Struct.Movie {
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Actor = make([]Struct.Actorinmovie, 1)
 		for rows2.Next() {
-			M.Actor = make([]Struct.Actorinmovie, 1)
 			err := rows2.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -240,8 +259,8 @@ func QueryReleasingmovie() []Struct.Movie {
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 		for rows3.Next() {
-			M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 			err := rows3.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -266,14 +285,14 @@ func QueryHotmovie() []Struct.Movie {
 	var persons Struct.Actorinmovie
 	var time1 []uint8
 	t1 := time.Now()
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie order by timestampdiff(day,?,ddate )*0.6+score*40 desc ;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,URL from movie order by timestampdiff(day,?,ddate )*0.6+score*40 desc ;"
 	rows0, err := Db.Query(sqlStr0, t1)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.URL)
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
 		if err != nil {
@@ -281,8 +300,8 @@ func QueryHotmovie() []Struct.Movie {
 			return nil
 		}
 		M.Date = utos(time1)
+		M.Director = make([]Struct.Actorinmovie, 1)
 		for rows.Next() {
-			M.Director = make([]Struct.Actorinmovie, 1)
 			err := rows.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -297,8 +316,8 @@ func QueryHotmovie() []Struct.Movie {
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Actor = make([]Struct.Actorinmovie, 1)
 		for rows2.Next() {
-			M.Actor = make([]Struct.Actorinmovie, 1)
 			err := rows2.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -313,8 +332,8 @@ func QueryHotmovie() []Struct.Movie {
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 		for rows3.Next() {
-			M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 			err := rows3.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -385,14 +404,14 @@ func QueryNewhotmovie() []Struct.Movie {
 	var persons Struct.Actorinmovie
 	var time1 []uint8
 	t1 := time.Now()
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score from movie where timestampdiff(month ,?,ddate )<3 order by score  desc;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,URL from movie where timestampdiff(month ,?,ddate )<3 order by score  desc;"
 	rows0, err := Db.Query(sqlStr0, t1)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.URL)
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
 		if err != nil {
@@ -400,8 +419,8 @@ func QueryNewhotmovie() []Struct.Movie {
 			return nil
 		}
 		M.Date = utos(time1)
+		M.Director = make([]Struct.Actorinmovie, 1)
 		for rows.Next() {
-			M.Director = make([]Struct.Actorinmovie, 1)
 			err := rows.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -416,8 +435,8 @@ func QueryNewhotmovie() []Struct.Movie {
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Actor = make([]Struct.Actorinmovie, 1)
 		for rows2.Next() {
-			M.Actor = make([]Struct.Actorinmovie, 1)
 			err := rows2.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -432,8 +451,8 @@ func QueryNewhotmovie() []Struct.Movie {
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 		for rows3.Next() {
-			M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 			err := rows3.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -449,6 +468,7 @@ func QueryNewhotmovie() []Struct.Movie {
 	}
 	M1 = M1[1:]
 	return M1
+
 }
 
 func Classificationmovie(ty string, area string, year string, feature string) []Struct.Movie {
@@ -479,8 +499,8 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 			return nil
 		}
 		M.Date = utos(time1)
+		M.Director = make([]Struct.Actorinmovie, 1)
 		for rows.Next() {
-			M.Director = make([]Struct.Actorinmovie, 1)
 			err := rows.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -495,8 +515,8 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Actor = make([]Struct.Actorinmovie, 1)
 		for rows2.Next() {
-			M.Actor = make([]Struct.Actorinmovie, 1)
 			err := rows2.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -511,8 +531,8 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 		for rows3.Next() {
-			M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 			err := rows3.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -558,8 +578,8 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 			return nil
 		}
 		M.Date = utos(time1)
+		M.Director = make([]Struct.Actorinmovie, 1)
 		for rows.Next() {
-			M.Director = make([]Struct.Actorinmovie, 1)
 			err := rows.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -574,8 +594,8 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Actor = make([]Struct.Actorinmovie, 1)
 		for rows2.Next() {
-			M.Actor = make([]Struct.Actorinmovie, 1)
 			err := rows2.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)
@@ -590,8 +610,8 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 			fmt.Printf("query failed, err:%v\n", err)
 			return nil
 		}
+		M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 		for rows3.Next() {
-			M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 			err := rows3.Scan(&psid)
 			if err != nil {
 				fmt.Printf("scan failed, err:%v\n", err)

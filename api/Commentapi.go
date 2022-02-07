@@ -79,10 +79,10 @@ func Chcommentapi(c *gin.Context) {
 }
 
 func Listcommentapi(c *gin.Context) {
-	movieid := c.Query("movieid")
+	movieid := c.Query("movie_id")
 	movieid2, _ := strconv.Atoi(movieid)
-	c.JSON(http.StatusOK, service.ListFilmcomment(movieid2))
-	c.Next()
+	cm := service.ListFlimcommentbytime(movieid2)
+	c.JSON(http.StatusOK, cm)
 }
 
 func Shortcommentapi(c *gin.Context) {
@@ -115,35 +115,35 @@ func Shortcommentapi(c *gin.Context) {
 }
 
 func Listusecommentapi(c *gin.Context) {
-	movie_id := c.PostForm("movie_id")
+	movie_id := c.Query("movie_id")
 	movie_id2, _ := strconv.Atoi(movie_id)
 	cm := service.ListFlimcommentbyuse(movie_id2)
 	c.JSON(http.StatusOK, cm)
 }
 
 func Listtimecommentapi(c *gin.Context) {
-	movie_id := c.PostForm("movie_id")
+	movie_id := c.Query("movie_id")
 	movie_id2, _ := strconv.Atoi(movie_id)
 	cm := service.ListFlimcommentbytime(movie_id2)
 	c.JSON(http.StatusOK, cm)
 }
 
 func Listshortcommentapi(c *gin.Context) {
-	movie_id := c.PostForm("movie_id")
+	movie_id := c.Query("movie_id")
 	movie_id2, _ := strconv.Atoi(movie_id)
 	cm := service.ListFlimshortcommentbyuselimit(movie_id2)
 	c.JSON(http.StatusOK, cm)
 }
 
 func ListshortcommentapiBytime(c *gin.Context) {
-	movie_id := c.PostForm("movie_id")
+	movie_id := c.Query("movie_id")
 	movie_id2, _ := strconv.Atoi(movie_id)
 	cm := service.ListFilmshortcommentbytime(movie_id2)
 	c.JSON(http.StatusOK, cm)
 }
 
 func ListshortcommentapiByuse(c *gin.Context) {
-	movie_id := c.PostForm("movie_id")
+	movie_id := c.Query("movie_id")
 	movie_id2, _ := strconv.Atoi(movie_id)
 	cm := service.ListFilmshortcommentbyuse(movie_id2)
 	c.JSON(http.StatusOK, cm)

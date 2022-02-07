@@ -177,7 +177,7 @@ func Querycomment(pid int) bool {
 
 func Insertshortcomment(from_username string, from_id int, content string, lorw int, score float64, movie_id int) bool {
 	time := time.Now()
-	_, err := Db.Exec("insert into shortcomment(from_username, from_id, content, theday, lorw, score, movie_id) values(?,?,?,?,?,?);", from_username, from_id, content, time, lorw, score, movie_id)
+	_, err := Db.Exec("insert into shortcomment(from_username, from_id, content, theday, lorw, score, movie_id,usenum,nouse) values(?,?,?,?,?,?,?,0,0);", from_username, from_id, content, time, lorw, score, movie_id)
 	if err != nil {
 		fmt.Println(err)
 		return false
@@ -197,7 +197,7 @@ func QueryshortcommentbyTime(movieid int) []Struct.Shortcomment {
 		return nil
 	}
 	for rows.Next() {
-		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Score, &scm1.Movie_id)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -220,7 +220,7 @@ func QueryshortcommentbyUse(movieid int) []Struct.Shortcomment {
 		return nil
 	}
 	for rows.Next() {
-		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Score, &scm1.Movie_id)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -243,7 +243,7 @@ func QueryshortcommentbyUsebyLimit(movieid int) []Struct.Shortcomment {
 		return nil
 	}
 	for rows.Next() {
-		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &time1, &scm1.Usenum, &scm1.Noues, &scm1.Score, &scm1.Movie_id)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -285,12 +285,10 @@ func Scoredao(id int) {
 	err := Db.QueryRow("select AVG(score) from comment where movie_id = ?;", id).Scan(&score1)
 	if err != nil {
 		score1 = 0.0
-		return
 	}
 	err = Db.QueryRow("select AVG(score) from shortcomment where movie_id = ?;", id).Scan(&score2)
 	if err != nil {
 		score2 = 0.0
-		return
 	}
 	Score := (score2 + score1) / 2
 	err2, _ := Db.Exec("update movie set score=? where id =?", Score, id)

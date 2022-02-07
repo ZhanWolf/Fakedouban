@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"message-board/dao"
 	"message-board/service"
 	"net/http"
 	"time"
@@ -16,19 +17,27 @@ func Login(c *gin.Context) {
 	err := service.Checkuseraliveser(username)
 	if err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusOK, "没有此账户")
+		c.JSON(403, gin.H{
+			"code":   "403",
+			"reason": "没有该用户",
+		})
 		return
 	}
 
 	cookie := service.UserLoginser(username, password)
 	if cookie == nil {
-		c.JSON(http.StatusOK, "登录失败，密码错误")
+		c.JSON(403, gin.H{
+			"code":   "403",
+			"reason": "密码错误",
+		})
 		return
 	}
+	id, err := dao.Queryusername(username)
 	http.SetCookie(c.Writer, cookie)
 	c.JSON(http.StatusOK, gin.H{
-		"登录成功":   "",
-		"Hello!": username,
+		"code":     "200",
+		"Id":       id,
+		"username": username,
 	})
 
 }
@@ -43,28 +52,41 @@ func Singup(c *gin.Context) {
 	err := service.Checkuseraliveser(username)
 	if err == nil {
 		fmt.Println(err)
-		c.JSON(http.StatusOK, "该账户已存在")
+		c.JSON(403, gin.H{
+			"code":   403,
+			"reason": "该用户名已存在",
+		})
 		return
 	}
 	if utf8.RuneCountInString(password) <= 3 {
-		c.JSON(http.StatusOK, "密码长度应该大于3")
+		c.JSON(403, gin.H{
+			"code":   403,
+			"reason": "密码小于3位",
+		})
 		return
 	}
-	if utf8.RuneCountInString(username) <= 3 {
-		c.JSON(http.StatusOK, "用户名长度应该大于3")
+	if utf8.RuneCountInString(username) < 3 {
+		c.JSON(403, gin.H{
+			"code":   403,
+			"reason": "用户名小于3位",
+		})
 		return
 	}
 
 	cookie, flag := service.UserSingup(username, password, passwordagain, protectionQ, protectionA)
 	if flag {
-		c.JSON(http.StatusOK, "两次密码输入不正确")
+		c.JSON(403, gin.H{
+			"code":   403,
+			"reason": "两次输入密码不正确",
+		})
 		return
 	}
-
-	if utf8.RuneCountInString(password) <= 3 {
-		c.JSON(http.StatusOK, "密码长度应该大于3")
-	}
-	c.JSON(http.StatusOK, "注册成功")
+	id, err := dao.Queryusername(username)
+	c.JSON(http.StatusOK, gin.H{
+		"code":     200,
+		"Id":       id,
+		"username": username,
+	})
 	http.SetCookie(c.Writer, cookie)
 }
 
@@ -77,7 +99,10 @@ func Reset(c *gin.Context) {
 	err := service.Checkuseraliveser(username)
 	if err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusOK, "没有此账户")
+		c.JSON(403, gin.H{
+			"code":   403,
+			"reason": "没有找到该用户",
+		})
 		return
 	}
 	service.PasswordReset(c, username, password, protectionA, passwordagain)
@@ -94,6 +119,7 @@ func Clock(c *gin.Context) {
 func Userimfor(c *gin.Context) {
 	username, _ := c.Cookie("now_user_login")
 	U := service.Listuserimfor(username, c)
+	U.Code = 200
 	c.JSON(http.StatusOK, U)
 }
 
@@ -102,7 +128,17 @@ func Setuserintroduction(c *gin.Context) {
 	introduction := c.PostForm("introduction")
 	err := service.Setintroduction(username, introduction)
 	if err != nil {
-		c.JSON(http.StatusOK, "修改信息失败")
+		c.JSON(403, gin.H{
+			"code":   403,
+			"reason": "修改信息失败",
+		})
 	}
-	c.JSON(http.StatusOK, "修改信息成功")
+	id, err := dao.Queryusername(username)
+	c.JSON(http.StatusOK, gin.H{
+		"code":         "200",
+		"performance":  "修改简介成功",
+		"id":           id,
+		"username":     username,
+		"introduction": introduction,
+	})
 }

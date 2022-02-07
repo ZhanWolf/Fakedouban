@@ -58,7 +58,7 @@ func UpdateIntroduction(introduction string, id int) {
 }
 func Queryintroducton(from_id int) (string, error) {
 	var introduction string
-	err := Db.QueryRow("select introduction from user where id=?", from_id).Scan(introduction)
+	err := Db.QueryRow("select introduction from user where id=?", from_id).Scan(&introduction)
 	if err != nil {
 		fmt.Println(err)
 		return " ", err
@@ -77,7 +77,7 @@ func QueryUserscm(from_id int) []Struct.Scminuser {
 		return nil
 	}
 	for rows.Next() {
-		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &scm1.Theday, &scm1.Score, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
+		err := rows.Scan(&scm1.Id, &scm1.From_username, &scm1.From_id, &scm1.Content, &scm1.Theday, &scm1.Lorw, &scm1.Score, &scm1.Usenum, &scm1.Noues, &scm1.Movie_id)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -130,7 +130,11 @@ func Looked(from_id int) []Struct.Movie {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		Db.QueryRow("select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Pid, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
+		err = Db.QueryRow("select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Pid, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Area, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
+		if err != nil {
+			fmt.Printf("scan failed, err:%v\n", err)
+			return nil
+		}
 		Movieslice = append(Movieslice, Movie)
 	}
 	Movieslice = Movieslice[1:]
@@ -155,7 +159,7 @@ func Wanted(from_id int) []Struct.Movie {
 			return nil
 		}
 
-		Db.QueryRow("select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Pid, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
+		Db.QueryRow("select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Pid, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Area, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
 		Movieslice = append(Movieslice, Movie)
 	}
 	Movieslice = Movieslice[1:]

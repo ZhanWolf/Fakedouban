@@ -17,9 +17,9 @@ func Movieimforapi(c *gin.Context) {
 		return
 	}
 	M := service.Movieinfor(movieid2)
-
+	cm := service.ListFlimcommentbyuse(movieid2)
 	c.JSON(http.StatusOK, M)
-	c.Next()
+	c.JSON(http.StatusOK, cm)
 }
 
 func Personapi(c *gin.Context) {
@@ -36,7 +36,6 @@ func Moviepicapi(c *gin.Context) {
 	movieid2, _ := strconv.Atoi(movieid)
 	M := service.Moviepicsvs(movieid2)
 	c.JSON(http.StatusOK, M)
-	c.Next()
 }
 
 func Personpic(c *gin.Context) {
@@ -61,7 +60,38 @@ func HotMovieimforapi(c *gin.Context) {
 	M := service.HotMovieinfor()
 	c.JSON(http.StatusOK, M)
 }
+
 func RealeasingMovieimforapi(c *gin.Context) {
-	M := service.RealeasingMovieinfor()
-	c.JSON(http.StatusOK, M)
+	M2 := service.RealeasingMovieinfor()
+	c.JSON(http.StatusOK, M2)
+}
+
+func Newhotlist(c *gin.Context) {
+	M2 := service.RecommendMovieinfor()
+	c.JSON(http.StatusOK, M2)
+}
+
+func Searchmovie(c *gin.Context) {
+	stuff := c.PostForm("stuff")
+	M2, P2 := service.Qerymovie(stuff)
+	c.JSON(http.StatusOK, M2)
+	c.JSON(http.StatusOK, P2)
+}
+
+func Classhotlist(c *gin.Context) {
+	year := c.PostForm("year")
+	ty := c.PostForm("type")
+	area := c.PostForm("area")
+	feature := c.PostForm("feature")
+	M2 := service.ClassHotMovieinfor(ty, area, year, feature)
+	c.JSON(http.StatusOK, M2)
+}
+
+func Classmovie(c *gin.Context) {
+	year := c.PostForm("year")
+	ty := c.PostForm("type")
+	area := c.PostForm("area")
+	feature := c.PostForm("feature")
+	M2 := service.ClassMovieinfor(ty, area, year, feature)
+	c.JSON(http.StatusOK, M2)
 }

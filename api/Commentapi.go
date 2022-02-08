@@ -17,8 +17,8 @@ func Commentapi(c *gin.Context) {
 	cm.From_id, _ = dao.Queryusername(cm.From_username)
 	if cm.From_id == 0 {
 		fmt.Println("发生错误")
-		c.JSON(http.StatusOK, gin.H{
-			"状态": "失败",
+		c.JSON(404, gin.H{
+			"code": 404,
 		})
 		return
 	}
@@ -34,7 +34,7 @@ func Commentapi(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"状态":          "评论成功",
+		"code":        200,
 		"评论者id":       cm.From_id,
 		"评论者username": cm.From_username,
 		"评论内容":        cm.Content,
@@ -46,8 +46,8 @@ func Chcommentapi(c *gin.Context) {
 	pid2, _ := strconv.Atoi(pid)
 	flag := dao.Querycomment(pid2)
 	if flag == false {
-		c.JSON(http.StatusOK, gin.H{
-			"状态":   "失败",
+		c.JSON(404, gin.H{
+			"code": 404,
 			"可能原因": "未找到父id的评论",
 		})
 		fmt.Println("未找到父亲id的评论")
@@ -57,8 +57,8 @@ func Chcommentapi(c *gin.Context) {
 	From_id, _ := dao.Queryusername(From_username)
 	if From_id == 0 {
 		fmt.Println("发生错误")
-		c.JSON(http.StatusOK, gin.H{
-			"状态": "失败",
+		c.JSON(404, gin.H{
+			"code": 404,
 		})
 		return
 	}
@@ -69,12 +69,12 @@ func Chcommentapi(c *gin.Context) {
 
 	service.Setchildcomment(pid2, From_id, From_username, Content, useful2)
 	c.JSON(http.StatusOK, gin.H{
-		"状态":          "评论成功",
-		"评论的父亲id":     pid,
+		"code":        200,
+		"评论的Pid":      pid,
 		"评论者id":       From_id,
 		"评论者username": From_username,
 		"评论内容":        Content,
-		"有用状态":        useful,
+		"有用":          useful,
 	})
 }
 
@@ -90,8 +90,8 @@ func Shortcommentapi(c *gin.Context) {
 	From_id, _ := dao.Queryusername(From_username)
 	if From_id == 0 {
 		fmt.Println("发生错误")
-		c.JSON(http.StatusOK, gin.H{
-			"状态": "失败",
+		c.JSON(404, gin.H{
+			"code": 404,
 		})
 		return
 	}
@@ -105,7 +105,7 @@ func Shortcommentapi(c *gin.Context) {
 
 	service.Setshortcomment(From_username, From_id, content, lorw1, score1, Movieid2, c)
 	c.JSON(http.StatusOK, gin.H{
-		"状态":          "评论成功",
+		"code":        200,
 		"评论者id":       From_id,
 		"评论者username": From_username,
 		"评论内容":        content,

@@ -125,7 +125,9 @@ func Clock(c *gin.Context) {
 func Userimfor(c *gin.Context) {
 	username, _ := c.Cookie("now_user_login")
 	U := service.Listuserimfor(username, c)
-	U.Code = 200
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+	})
 	c.JSON(http.StatusOK, U)
 }
 

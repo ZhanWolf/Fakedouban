@@ -127,7 +127,6 @@ type Shortcomment struct {
 }
 
 type Userimfor struct {
-	Code         int
 	Id           int
 	Username     string
 	Introduction string

@@ -27,7 +27,7 @@ func Queryusername(username string) (int, error) {
 }
 
 func Insertuser(username string, password string, protectionQ string, protectionA string) error {
-	_, err := Db.Exec("insert into user(username,password,protectionQ,protectionA,introduction) values (?,?,?,?);", username, password, protectionQ, protectionA)
+	_, err := Db.Exec("insert into user(username,password,protectionQ,protectionA,introduction) values (?,?,?,?,0);", username, password, protectionQ, protectionA)
 	if err != nil {
 		fmt.Println("插入错误", err)
 	}

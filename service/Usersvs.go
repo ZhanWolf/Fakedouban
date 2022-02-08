@@ -54,26 +54,58 @@ func UserSingup(username string, password string, passwordagain string, protecti
 	return cookie, false
 }
 
-func PasswordReset(c *gin.Context, username string, password string, protectionA string, passwordagain string) {
+func PasswordReset(c *gin.Context, username string) (bool, string) {
 	dao.OpenDb()
 	protectionQ, trueprotectionA := dao.Queryprotection(username)
+	id, err := dao.Queryusername(username)
+	if err != nil {
+		fmt.Println(err)
+		return false, "none"
+	}
 	if protectionQ == "" {
-		c.JSON(http.StatusOK, "该账户未设置密保")
-		return
+		c.JSON(403, gin.H{
+			"code":     403,
+			"id":       id,
+			"username": username,
+			"reason":   "该用户未设置密保",
+		})
+		return false, "none"
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			username:  "你好！",
-			"宁的密保问题是": protectionQ,
+			"code":        200,
+			"username":    username,
+			"protectionQ": protectionQ,
 		})
-	}
 
+	}
+	return true, trueprotectionA
+}
+
+func PasswordReset2(c *gin.Context, username string, password string, protectionA string, passwordagain string) {
+	_, trueprotectionA := dao.Queryprotection(username)
+	id, _ := dao.Queryusername(username)
 	if trueprotectionA == protectionA && password == passwordagain {
 		dao.Updatepassword(password, username)
-		c.JSON(http.StatusOK, "密码修改成功")
+		c.JSON(http.StatusOK, gin.H{
+			"code":        200,
+			"id":          id,
+			"username":    username,
+			"performance": "修改密码成功",
+		})
 	} else if passwordagain != password && trueprotectionA == protectionA {
-		c.JSON(http.StatusOK, "两次输入密码不相同")
+		c.JSON(403, gin.H{
+			"code":     403,
+			"id":       id,
+			"username": username,
+			"reason":   "两次密码不相同",
+		})
 	} else if trueprotectionA != protectionA {
-		c.JSON(http.StatusOK, "密保答案错误")
+		c.JSON(403, gin.H{
+			"code":     403,
+			"id":       id,
+			"username": username,
+			"reason":   "密保答案有误",
+		})
 	}
 }
 

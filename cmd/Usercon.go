@@ -12,6 +12,7 @@ func Userroute(r *gin.Engine) {
 		us.POST("/login", api.Login)
 		us.POST("/Singup", api.Singup)
 		us.POST("/Reset", api.Reset)
+		us.POST("/QueryProtectionQ", api.QueryprotectionQ)
 		us.GET("/clock", cookie, api.Clock)
 		us.GET("/imfor", cookie, api.Userimfor)
 		us.POST("/change", cookie, api.Setuserintroduction)

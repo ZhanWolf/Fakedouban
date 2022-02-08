@@ -90,11 +90,8 @@ func Singup(c *gin.Context) {
 	http.SetCookie(c.Writer, cookie)
 }
 
-func Reset(c *gin.Context) {
+func QueryprotectionQ(c *gin.Context) {
 	username := c.PostForm("username") //用户名
-	password := c.PostForm("password") //密码
-	passwordagain := c.PostForm("passwordagain")
-	protectionA := c.PostForm("protectionA") //密保答案
 
 	err := service.Checkuseraliveser(username)
 	if err != nil {
@@ -105,7 +102,16 @@ func Reset(c *gin.Context) {
 		})
 		return
 	}
-	service.PasswordReset(c, username, password, protectionA, passwordagain)
+	service.PasswordReset(c, username)
+}
+
+func Reset(c *gin.Context) {
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	passwordagain := c.PostForm("passwordagain")
+	protectionA := c.PostForm("protectionA")
+
+	service.PasswordReset2(c, username, password, protectionA, passwordagain)
 }
 
 func Clock(c *gin.Context) {

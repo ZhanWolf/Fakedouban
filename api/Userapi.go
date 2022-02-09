@@ -3,11 +3,16 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"message-board/dao"
 	"message-board/service"
 	"net/http"
+	"strconv"
 	"time"
 	"unicode/utf8"
+
+	jwtgo "github.com/dgrijalva/jwt-go"
+	myjwt "message-board/jwt"
 )
 
 func Login(c *gin.Context) {
@@ -24,8 +29,8 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	cookie := service.UserLoginser(username, password)
-	if cookie == nil {
+	username1, cookie := service.UserLoginser(username, password)
+	if username1 == "" {
 		c.JSON(403, gin.H{
 			"code":   "403",
 			"reason": "密码错误",
@@ -34,10 +39,12 @@ func Login(c *gin.Context) {
 	}
 	id, err := dao.Queryusername(username)
 	http.SetCookie(c.Writer, cookie)
+	token := generateToken(c, id, username)
 	c.JSON(http.StatusOK, gin.H{
-		"code":     "200",
+		"code":     200,
 		"Id":       id,
 		"username": username,
+		"token":    token,
 	})
 
 }
@@ -149,4 +156,35 @@ func Setuserintroduction(c *gin.Context) {
 		"username":     username,
 		"introduction": introduction,
 	})
+}
+
+func generateToken(c *gin.Context, Id int, Username string) string {
+	j := &myjwt.JWT{
+		[]byte("newtrekWang"),
+	}
+	Id2 := strconv.Itoa(Id)
+	claims := myjwt.CustomClaims{
+		Id2,
+		Username,
+		jwtgo.StandardClaims{
+			NotBefore: int64(time.Now().Unix() - 1000), // 签名生效时间
+			ExpiresAt: int64(time.Now().Unix() + 3600), // 过期时间 一小时
+			Issuer:    "newtrekWang",                   //签名的发行者
+		},
+	}
+
+	token, err := j.CreateToken(claims)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"code":   500,
+			"status": -1,
+			"msg":    err.Error(),
+		})
+		return ""
+	}
+
+	log.Println(token)
+
+	return token
 }

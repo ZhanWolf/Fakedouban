@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"message-board/api"
+	"message-board/jwt"
 )
 
 func Userroute(r *gin.Engine) {
@@ -14,8 +15,8 @@ func Userroute(r *gin.Engine) {
 		us.POST("/Reset", api.Reset)
 		us.POST("/QueryProtectionQ", api.QueryprotectionQ)
 		us.GET("/clock", cookie, api.Clock)
-		us.GET("/imfor", cookie, api.Userimfor)
-		us.POST("/change", cookie, api.Setuserintroduction)
+		us.GET("/imfor", jwt.JWTAuth(), api.Userimfor)
+		us.POST("/change", jwt.JWTAuth(), api.Setuserintroduction)
 	}
 }
 

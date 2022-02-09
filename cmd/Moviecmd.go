@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/gin-gonic/gin"
 	"message-board/api"
+	"message-board/jwt"
 )
 
 func Movieroute(r *gin.Engine) {
@@ -16,7 +17,8 @@ func Movieroute(r *gin.Engine) {
 }
 
 func Moviecommentroute(r *gin.Engine) {
-	cm := r.Group("/comment", cookie)
+	cm := r.Group("/comment")
+	cm.Use(jwt.JWTAuth())
 	{
 		cm.POST("/parent", api.Commentapi)
 		cm.POST("/child", api.Chcommentapi)

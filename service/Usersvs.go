@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-func UserLoginser(username string, password string) *http.Cookie {
+func UserLoginser(username string, password string) (string, *http.Cookie) {
 	dao.OpenDb()
 	turepassword := dao.Queryuserpassword(username)
 	if turepassword != password {
-		return nil
+		return "", nil
 	}
 
 	cookie := &http.Cookie{
@@ -22,7 +22,7 @@ func UserLoginser(username string, password string) *http.Cookie {
 		Path:     "/",
 		HttpOnly: true,
 	}
-	return cookie
+	return username, cookie
 }
 
 func Checkuseraliveser(username string) error {

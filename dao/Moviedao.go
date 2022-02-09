@@ -13,7 +13,7 @@ func QueryMovieimfor(id int) *Struct.Movie {
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
-	err := Db.QueryRow("select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,language from movie where id = ?;", id).Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+	err := Db.QueryRow("select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language,URL from movie where id = ?;", id).Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language, &M.URL)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
@@ -357,7 +357,7 @@ func Querystuff(stuff string) ([]Struct.Movie, []Struct.Person) {
 	P := make([]Struct.Person, 1)
 	var P1 Struct.Person
 	var time []uint8
-	sqlStr := "select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score,language from movie where moviename like  CONCAT('%',?,'%') ;" //遍历写给登录用户的评论
+	sqlStr := "select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score,language,URL from movie where moviename like  CONCAT('%',?,'%') ;" //遍历写给登录用户的评论
 	rows, err := Db.Query(sqlStr, stuff)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -365,7 +365,7 @@ func Querystuff(stuff string) ([]Struct.Movie, []Struct.Person) {
 	}
 
 	for rows.Next() {
-		err := rows.Scan(&M1.Id, &M1.Pid, &M1.Pid, &M1.Moviename, &M1.Year, &M1.Introduction, &time, &M1.URL, &M1.Length, &M1.Length, &M1.Area, &M1.Type, &M1.Feature, &M1.Releasing, &M1.Score, &M1.Language)
+		err := rows.Scan(&M1.Id, &M1.Pid, &M1.Moviename, &M1.Year, &M1.Introduction, &time, &M1.URL, &M1.Length, &M1.Length, &M1.Area, &M1.Type, &M1.Feature, &M1.Releasing, &M1.Score, &M1.Language, &M1.URL)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil, nil
@@ -484,14 +484,14 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 		year3 = "all"
 	}
 	year3 = year2
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where type=? or area=? or feature =? or yyear=?;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language,URL from movie where type=? or area=? or feature =? or yyear=?;"
 	rows0, err := Db.Query(sqlStr0, ty, area, feature, year3)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language, &M.URL)
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
 		if err != nil {
@@ -563,14 +563,14 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 		year3 = "all"
 	}
 	year3 = year2
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where type=? or area=? or feature =? or yyear=? order by score desc ;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language,URL from movie where type=? or area=? or feature =? or yyear=? order by score desc ;"
 	rows0, err := Db.Query(sqlStr0, ty, area, feature, year3)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language, &M.URL)
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
 		if err != nil {

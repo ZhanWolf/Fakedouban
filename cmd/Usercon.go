@@ -23,7 +23,10 @@ func cookie(c *gin.Context) {
 	ck, err := c.Cookie("now_user_login")
 	if err != nil {
 		fmt.Println(err)
-		c.JSON(403, "未登录")
+		c.JSON(403, gin.H{
+			"code":   403,
+			"reason": "未登录",
+		})
 		c.Abort()
 	} else {
 		c.Set("cookie", ck)

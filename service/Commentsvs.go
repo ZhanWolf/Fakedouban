@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"message-board/Struct"
 	"message-board/dao"
-	"net/http"
 )
 
 func Setcomment(cm Struct.Comment, c *gin.Context) bool {
@@ -16,9 +15,9 @@ func Setcomment(cm Struct.Comment, c *gin.Context) bool {
 	}
 	flag := dao.Querymovie(cm.Movieid)
 	if flag == false {
-		c.JSON(http.StatusOK, gin.H{
-			"状态":   "失败",
-			"可能原因": "没有该电影",
+		c.JSON(404, gin.H{
+			"code":   404,
+			"reason": "没有该电影",
 		})
 		return false
 	}
@@ -120,9 +119,9 @@ func Setshortcomment(fromusername string, fromuerid int, content string, lorw in
 	}
 	flag := dao.Querymovie(movieid)
 	if flag == false {
-		c.JSON(http.StatusOK, gin.H{
-			"状态":   "失败",
-			"可能原因": "没有该电影",
+		c.JSON(404, gin.H{
+			"code":   404,
+			"reason": "没有该电影",
 		})
 		return
 	}

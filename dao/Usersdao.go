@@ -17,13 +17,25 @@ func Queryuserpassword(username string) string {
 }
 
 func Queryusername(username string) (int, error) {
+	OpenDb()
 	U := new(Struct.User)
-	err := Db.QueryRow("select username,id from user where username = ?;", username).Scan(&U.Username, &U.Id)
+	err := Db.QueryRow("select id from user where username = ?;", username).Scan(&U.Id)
 	if err != nil {
 		fmt.Println("查询错误", err)
 		return 0, err
 	}
 	return U.Id, nil
+}
+
+func Queryuserid(id int) (string, error) {
+	OpenDb()
+	U := new(Struct.User)
+	err := Db.QueryRow("select username from user where id = ?;", id).Scan(&U.Username)
+	if err != nil {
+		fmt.Println("查询错误", err)
+		return "", err
+	}
+	return U.Username, nil
 }
 
 func Insertuser(username string, password string, protectionQ string, protectionA string) error {

@@ -158,6 +158,23 @@ func Setuserintroduction(c *gin.Context) {
 	})
 }
 
+func OtherUserimfor(c *gin.Context) {
+	id := c.PostForm("id")
+	id2, err := strconv.Atoi(id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	username, err := dao.Queryuserid(id2)
+	if err != nil {
+		fmt.Println(err)
+	}
+	U := service.Listuserimfor(username, c)
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+	})
+	c.JSON(http.StatusOK, U)
+}
+
 func generateToken(c *gin.Context, Id int, Username string) string {
 	j := &myjwt.JWT{
 		[]byte("newtrekWang"),

@@ -17,6 +17,7 @@ func Userroute(r *gin.Engine) {
 		us.GET("/clock", cookie, api.Clock)
 		us.GET("/imfor", jwt.JWTAuth(), api.Userimfor)
 		us.POST("/change", jwt.JWTAuth(), api.Setuserintroduction)
+		us.POST("/otherimfor", api.OtherUserimfor)
 	}
 }
 

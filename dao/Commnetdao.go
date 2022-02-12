@@ -297,3 +297,11 @@ func Scoredao(id int) {
 		return
 	}
 }
+
+func utos(u []uint8) string {
+	by := []byte{}
+	for _, b := range u {
+		by = append(by, b)
+	}
+	return string(by)
+}

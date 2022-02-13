@@ -7,7 +7,7 @@ import (
 )
 
 func Movieroute(r *gin.Engine) {
-	r.GET("/object", api.Movieimforapi, api.Moviepicapi, api.Listcommentapi, api.Listshortcommentapi)
+	r.GET("/object", api.Movieimforapi, api.Moviepicapi, api.Listcommentapi, api.Listshortcommentapi, api.Listtalkinginmovieapi)
 	r.GET("/celebrity", api.Personapi, api.Personpic, api.Coperson)
 	r.GET("/recommend", api.RealeasingMovieimforapi, api.HotMovieimforapi)
 	r.GET("/newhotlist", api.Newhotlist)
@@ -28,4 +28,8 @@ func Moviecommentroute(r *gin.Engine) {
 	r.GET("/shortbyuse", api.ListshortcommentapiByuse)
 	r.GET("/commentbyuse", api.Listusecommentapi)
 	r.GET("/commentbytime", api.Listtimecommentapi)
+	r.GET("/talking", api.Listonetaking)
+	r.POST("/Settalking", jwt.JWTAuth(), api.Talkingapi)
+	r.POST("/talkingcm", jwt.JWTAuth(), api.Talkingcmapi)
+	r.POST("/talkingchcm", jwt.JWTAuth(), api.Talkingchcmapi)
 }

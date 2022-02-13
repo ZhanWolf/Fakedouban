@@ -51,7 +51,7 @@ func Queryusermoviecm(movieid int) ([]Struct.Comment, error) {
 	var chcm2 Struct.Childcomment
 	var time1 []uint8
 	var time2 []uint8
-	i := 0
+
 	sqlStr := "select id,from_username, from_id,Content, theday, usenum, unusenum,score,movie_id from comment where movie_id = ? order by theday desc ;" //遍历写给登录用户的评论
 	rows, err := Db.Query(sqlStr, movieid)
 	if err != nil {
@@ -77,7 +77,7 @@ func Queryusermoviecm(movieid int) ([]Struct.Comment, error) {
 		}
 		okk.Close()
 		cm = append(cm, cm2)
-		i++
+
 	}
 
 	rows.Close()
@@ -91,7 +91,7 @@ func QueryusermoviecmbyUse(movieid int) ([]Struct.Comment, error) {
 	var chcm2 Struct.Childcomment
 	var time1 []uint8
 	var time2 []uint8
-	i := 0
+
 	sqlStr := "select id,from_username, from_id,Content, theday, usenum, unusenum,score,movie_id from comment where movie_id = ? order by usenum desc ;" //遍历写给登录用户的评论
 	rows, err := Db.Query(sqlStr, movieid)
 	if err != nil {
@@ -117,7 +117,7 @@ func QueryusermoviecmbyUse(movieid int) ([]Struct.Comment, error) {
 		}
 		okk.Close()
 		cm = append(cm, cm2)
-		i++
+
 	}
 
 	rows.Close()
@@ -131,7 +131,6 @@ func QueryusermoviecmbyUsebyLimit(movieid int) ([]Struct.Comment, error) {
 	var chcm2 Struct.Childcomment
 	var time1 []uint8
 	var time2 []uint8
-	i := 0
 	sqlStr := "select id,from_username, from_id,Content, theday, usenum, unusenum,score,movie_id from comment where movie_id = ? order by usenum desc limit 5;" //遍历写给登录用户的评论
 	rows, err := Db.Query(sqlStr, movieid)
 	if err != nil {
@@ -157,7 +156,7 @@ func QueryusermoviecmbyUsebyLimit(movieid int) ([]Struct.Comment, error) {
 		}
 		okk.Close()
 		cm = append(cm, cm2)
-		i++
+
 	}
 
 	rows.Close()

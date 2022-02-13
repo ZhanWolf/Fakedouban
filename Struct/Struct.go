@@ -165,3 +165,44 @@ type Cminuser struct {
 	Movieurl      string
 	Moviename     string
 }
+
+type Talking struct {
+	Id       int
+	MovieID  int
+	Title    string
+	Content  string
+	Username string
+	Userid   int
+	Theday   string
+	Url      string
+	Cm       []Tkcm
+}
+
+type Tkcm struct {
+	Id         int
+	Talking_id int
+	Username   string
+	Userid     int
+	Content    string
+	Theday     string
+	Child      []Tkchild
+}
+
+type Tkchild struct {
+	Id       int
+	Pid      int
+	Username string
+	Userid   int
+	Content  string
+	Theday   string
+}
+
+type Tkinmovie struct {
+	Id       int
+	MovieID  int
+	Title    string
+	Username string
+	Userid   int
+	Thedat   string
+	URL      string
+}

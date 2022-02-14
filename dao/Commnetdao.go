@@ -290,7 +290,7 @@ func Scoredao(id int) {
 		score2 = 0.0
 	}
 	Score := (score2 + score1) / 2
-	err2, _ := Db.Exec("update movie set score=? where id =?", Score, id)
+	err2, _ := Db.Exec("update movie set score=? where id =?;", Score, id)
 	if err2 != nil {
 		fmt.Println(err2)
 		return
@@ -303,4 +303,31 @@ func utos(u []uint8) string {
 		by = append(by, b)
 	}
 	return string(by)
+}
+
+func Queryshortusenum(id int) (int, int) {
+	var use int
+	var nouse int
+	Db.QueryRow("select usenum,nouse from shortcomment where id=?;").Scan(&use, &nouse)
+	return use, nouse
+}
+
+func Updateshortuse(id int, usenum int) bool {
+	usenum++
+	_, err := Db.Exec("update shortcomment set usenum=? where id =?;", usenum, id)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return true
+}
+
+func Updateshortnouse(id int, nouse int) bool {
+	nouse++
+	_, err := Db.Exec("update shortcomment set nouse=? where id =?;", nouse, id)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return true
 }

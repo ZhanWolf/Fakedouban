@@ -148,3 +148,12 @@ func ListshortcommentapiByuse(c *gin.Context) {
 	cm := service.ListFilmshortcommentbyuse(movie_id2)
 	c.JSON(http.StatusOK, cm)
 }
+
+func Useforshort(c *gin.Context) {
+	shortcomment_id := c.PostForm("shortcomment_id")
+	id, _ := strconv.Atoi(shortcomment_id)
+	use := c.PostForm("use")
+	use1, _ := strconv.Atoi(use)
+	service.Updateshortuse(id, use1, c)
+
+}

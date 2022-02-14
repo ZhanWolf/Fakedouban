@@ -23,6 +23,8 @@ func Moviecommentroute(r *gin.Engine) {
 		cm.POST("/parent", api.Commentapi)
 		cm.POST("/child", api.Chcommentapi)
 		cm.POST("/shortcomment", api.Shortcommentapi)
+		cm.POST("/scmuse", api.Useforshort)
+
 	}
 	r.GET("/shortbytime", api.ListshortcommentapiBytime)
 	r.GET("/shortbyuse", api.ListshortcommentapiByuse)

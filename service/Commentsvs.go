@@ -127,3 +127,48 @@ func Setshortcomment(fromusername string, fromuerid int, content string, lorw in
 	}
 	dao.Insertshortcomment(fromusername, fromuerid, content, lorw, score, movieid)
 }
+
+func Updateshortuse(id int, use int, c *gin.Context) {
+	err := dao.OpenDb()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if use == 1 {
+		flag := dao.Updateshortuse(id, use)
+		if flag {
+			c.JSON(200, gin.H{
+				"code":            200,
+				"shortcomment_id": id,
+				"if use":          use,
+				"msg":             "更新信息成功",
+			})
+		} else {
+			c.JSON(500, gin.H{
+				"code": 500,
+				"msg":  "更新信息失败",
+			})
+		}
+	} else if use == 0 {
+		flag := dao.Updateshortnouse(id, use)
+		if flag {
+			c.JSON(200, gin.H{
+				"code":            200,
+				"shortcomment_id": id,
+				"if use":          use,
+				"msg":             "更新信息成功",
+			})
+		} else {
+			c.JSON(500, gin.H{
+				"code": 500,
+				"msg":  "更新信息失败",
+			})
+		}
+	} else {
+		c.JSON(500, gin.H{
+			"code": 500,
+			"msg":  "更新信息失败",
+		})
+	}
+
+}

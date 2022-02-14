@@ -134,8 +134,9 @@ func Updateshortuse(id int, use int, c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
+	usenum, nouse := dao.Queryshortusenum(id)
 	if use == 1 {
-		flag := dao.Updateshortuse(id, use)
+		flag := dao.Updateshortuse(id, usenum)
 		if flag {
 			c.JSON(200, gin.H{
 				"code":            200,
@@ -150,7 +151,7 @@ func Updateshortuse(id int, use int, c *gin.Context) {
 			})
 		}
 	} else if use == 0 {
-		flag := dao.Updateshortnouse(id, use)
+		flag := dao.Updateshortnouse(id, nouse)
 		if flag {
 			c.JSON(200, gin.H{
 				"code":            200,

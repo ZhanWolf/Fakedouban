@@ -92,13 +92,15 @@ func Querytalking(Id int) Struct.Talking {
 func Querytalkinginmovie(movieid int) []Struct.Tkinmovie {
 	talkings := make([]Struct.Tkinmovie, 1)
 	var talking Struct.Tkinmovie
-	sqlStr := "select id, movie_id, title, theday, username, userid, url from talking where movie_id= ? ;" //遍历写给登录用户的评论
+	sqlStr := "select id, movie_id, title, theday, username, userid from talking where movie_id= ? ;" //遍历写给登录用户的评论
 	rows, err := Db.Query(sqlStr, movieid)
 	if err != nil {
 		fmt.Println(err)
 	}
 	for rows.Next() {
-		err = rows.Scan(talking.Id, talking.MovieID, talking.Title, talking.Thedat, talking.Username, talking.Userid, talking.URL)
+		err = rows.Scan(&talking.Id, &talking.MovieID, &talking.Title, &talking.Thedat, &talking.Username, &talking.Userid)
+		Id2 := strconv.Itoa(talking.Id)
+		talking.URL = "http://119.91.20.70:6060/talking?talking_id=" + Id2
 		if err != nil {
 			fmt.Println(err)
 		}

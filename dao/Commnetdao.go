@@ -308,7 +308,7 @@ func utos(u []uint8) string {
 func Queryshortusenum(id int) (int, int) {
 	var use int
 	var nouse int
-	Db.QueryRow("select usenum,nouse from shortcomment where id=?;").Scan(&use, &nouse)
+	Db.QueryRow("select usenum,nouse from shortcomment where id=?;", id).Scan(&use, &nouse)
 	return use, nouse
 }
 

@@ -13,11 +13,13 @@ func QueryMovieimfor(id int) *Struct.Movie {
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
-	err := Db.QueryRow("select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language,URL from movie where id = ?;", id).Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language, &M.URL)
+	err := Db.QueryRow("select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where id = ?;", id).Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
 	}
+	Id := strconv.Itoa(M.Id)
+	M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 	M.Date = utos(time1)
 	sqlStr := "select personid from record_direct where pid=?;"
 	rows, err := Db.Query(sqlStr, id)
@@ -32,7 +34,9 @@ func QueryMovieimfor(id int) *Struct.Movie {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+		Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+		Id = strconv.Itoa(persons.Id)
+		persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 		M.Director = append(M.Director, persons)
 	}
 	sqlStr2 := "select personid from record_act where pid=?;"
@@ -48,7 +52,9 @@ func QueryMovieimfor(id int) *Struct.Movie {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+		Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+		Id = strconv.Itoa(persons.Id)
+		persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 		M.Actor = append(M.Actor, persons)
 	}
 	sqlStr3 := "select personid from record_act where pid=?;"
@@ -64,7 +70,9 @@ func QueryMovieimfor(id int) *Struct.Movie {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+		Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+		Id = strconv.Itoa(persons.Id)
+		persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 		M.Scriptwriter = append(M.Scriptwriter, persons)
 	}
 	M.Director = M.Director[1:]
@@ -78,11 +86,13 @@ func QueryPersonimfor(id int) *Struct.Person {
 	var mvid int
 	var mvs Struct.Movieinactor
 	var time1 []uint8
-	err := Db.QueryRow("select id,introduction,birthday,Constellations,chinesename,englishname,birthplace,jobs,posterurl,URL from person where id = ?;", id).Scan(&P.Id, &P.Introduction, &time1, &P.Constellations, &P.Chinesename, &P.Englishname, &P.Birthplace, &P.Jobs, &P.Poster, &P.URl)
+	err := Db.QueryRow("select id,introduction,birthday,Constellations,chinesename,englishname,birthplace,jobs,posterurl from person where id = ?;", id).Scan(&P.Id, &P.Introduction, &time1, &P.Constellations, &P.Chinesename, &P.Englishname, &P.Birthplace, &P.Jobs, &P.Poster, &P.URl)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
 	}
+	Id := strconv.Itoa(P.Id)
+	P.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 	P.Birthday = utos(time1)
 	sqlStr := "select pid from record_all where personid=?;"
 	rows, err := Db.Query(sqlStr, id)
@@ -97,7 +107,9 @@ func QueryPersonimfor(id int) *Struct.Person {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		Db.QueryRow("select id,moviename,URL from movie where id=?;", mvid).Scan(&mvs.Id, &mvs.Name, &mvs.URl)
+		Db.QueryRow("select id,moviename from movie where id=?;", mvid).Scan(&mvs.Id, &mvs.Name)
+		Id = strconv.Itoa(mvs.Id)
+		mvs.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 		P.Works = append(P.Works, mvs)
 	}
 	P.Works = P.Works[1:]
@@ -125,7 +137,9 @@ func QueryCooperation(id int) []Struct.Coperson {
 	}
 	copersonidslice = removeDuplicateValues(copersonidslice)
 	for i := 0; i < len(copersonidslice); i++ {
-		Db.QueryRow("select id,chinesename,URL from person where id =?", copersonidslice[i]).Scan(&Coperson2.Id, &Coperson2.Name, &Coperson2.URL)
+		Db.QueryRow("select id,chinesename from person where id =?", copersonidslice[i]).Scan(&Coperson2.Id, &Coperson2.Name)
+		Id := strconv.Itoa(Coperson2.Id)
+		Coperson2.URL = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 		Coperson = append(Coperson, Coperson2)
 	}
 	Coperson = Coperson[1:]
@@ -212,14 +226,16 @@ func QueryReleasingmovie() []Struct.Movie {
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,URL,language from movie where releasing = 1;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where releasing = 1;"
 	rows0, err := Db.Query(sqlStr0)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.URL, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		Id := strconv.Itoa(M.Id)
+		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		M.Date = utos(time1)
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
@@ -234,7 +250,9 @@ func QueryReleasingmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Director = append(M.Director, persons)
 		}
 		sqlStr2 := "select personid from record_act where pid=?;"
@@ -250,7 +268,9 @@ func QueryReleasingmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
 		sqlStr3 := "select personid from record_act where pid=?;"
@@ -266,7 +286,9 @@ func QueryReleasingmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Scriptwriter = append(M.Scriptwriter, persons)
 		}
 		M.Director = M.Director[1:]
@@ -285,14 +307,16 @@ func QueryHotmovie() []Struct.Movie {
 	var persons Struct.Actorinmovie
 	var time1 []uint8
 	t1 := time.Now()
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,URL,language from movie order by timestampdiff(day,?,ddate )*0.6+score*40 desc ;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie order by timestampdiff(day,?,ddate )*0.6+score*40 desc ;"
 	rows0, err := Db.Query(sqlStr0, t1)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.URL, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		Id := strconv.Itoa(M.Id)
+		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
 		if err != nil {
@@ -307,7 +331,9 @@ func QueryHotmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Director = append(M.Director, persons)
 		}
 		sqlStr2 := "select personid from record_act where pid=?;"
@@ -323,7 +349,9 @@ func QueryHotmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
 		sqlStr3 := "select personid from record_act where pid=?;"
@@ -339,7 +367,9 @@ func QueryHotmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Scriptwriter = append(M.Scriptwriter, persons)
 		}
 		M.Director = M.Director[1:]
@@ -357,7 +387,7 @@ func Querystuff(stuff string) ([]Struct.Movie, []Struct.Person) {
 	P := make([]Struct.Person, 1)
 	var P1 Struct.Person
 	var time []uint8
-	sqlStr := "select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score,language,URL from movie where moviename like  CONCAT('%',?,'%') ;" //遍历写给登录用户的评论
+	sqlStr := "select id, pid, moviename, yyear, introduction, ddate, posterurl, length, area, type, feature, releasing, score,language from movie where moviename like  CONCAT('%',?,'%') ;" //遍历写给登录用户的评论
 	rows, err := Db.Query(sqlStr, stuff)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -365,7 +395,9 @@ func Querystuff(stuff string) ([]Struct.Movie, []Struct.Person) {
 	}
 
 	for rows.Next() {
-		err := rows.Scan(&M1.Id, &M1.Pid, &M1.Moviename, &M1.Year, &M1.Introduction, &time, &M1.URL, &M1.Length, &M1.Length, &M1.Area, &M1.Type, &M1.Feature, &M1.Releasing, &M1.Score, &M1.Language, &M1.URL)
+		err := rows.Scan(&M1.Id, &M1.Pid, &M1.Moviename, &M1.Year, &M1.Introduction, &time, &M1.Poster, &M1.Length, &M1.Area, &M1.Type, &M1.Feature, &M1.Releasing, &M1.Score, &M1.Language)
+		Id := strconv.Itoa(M1.Id)
+		M1.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil, nil
@@ -375,7 +407,7 @@ func Querystuff(stuff string) ([]Struct.Movie, []Struct.Person) {
 	}
 	rows.Close()
 	M = M[1:]
-	sqlStr2 := "select id, introduction, birthday, Constellations, chinesename, englishname, birthplace,posterurl, URL from person where chinesename like  CONCAT('%',?,'%') ;" //遍历写给登录用户的评论
+	sqlStr2 := "select id, introduction, birthday, Constellations, chinesename, englishname, birthplace,posterurl from person where chinesename like  CONCAT('%',?,'%') ;" //遍历写给登录用户的评论
 	rows2, err := Db.Query(sqlStr2, stuff)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -383,7 +415,9 @@ func Querystuff(stuff string) ([]Struct.Movie, []Struct.Person) {
 	}
 
 	for rows2.Next() {
-		err := rows2.Scan(&P1.Id, &P1.Introduction, &time, &P1.Constellations, &P1.Chinesename, &P1.Englishname, &P1.Birthplace, &P1.Poster, &P1.URl)
+		err := rows2.Scan(&P1.Id, &P1.Introduction, &time, &P1.Constellations, &P1.Chinesename, &P1.Englishname, &P1.Birthplace, &P1.Poster)
+		Id := strconv.Itoa(P1.Id)
+		P1.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return M, nil
@@ -404,14 +438,16 @@ func QueryNewhotmovie() []Struct.Movie {
 	var persons Struct.Actorinmovie
 	var time1 []uint8
 	t1 := time.Now()
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,URL,language from movie where timestampdiff(month ,?,ddate )<3 order by score  desc;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where timestampdiff(month ,?,ddate )<3 order by score  desc;"
 	rows0, err := Db.Query(sqlStr0, t1)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.URL, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		Id := strconv.Itoa(M.Id)
+		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
 		if err != nil {
@@ -426,7 +462,9 @@ func QueryNewhotmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Director = append(M.Director, persons)
 		}
 		sqlStr2 := "select personid from record_act where pid=?;"
@@ -442,7 +480,9 @@ func QueryNewhotmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
 		sqlStr3 := "select personid from record_act where pid=?;"
@@ -458,7 +498,9 @@ func QueryNewhotmovie() []Struct.Movie {
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Scriptwriter = append(M.Scriptwriter, persons)
 		}
 		M.Director = M.Director[1:]
@@ -484,14 +526,16 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 		year3 = "all"
 	}
 	year3 = year2
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language,URL from movie where type=? or area=? or feature =? or yyear=?;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where type=? or area=? or feature =? or yyear=?;"
 	rows0, err := Db.Query(sqlStr0, ty, area, feature, year3)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language, &M.URL)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		Id := strconv.Itoa(M.Id)
+		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
 		if err != nil {
@@ -506,7 +550,9 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Director = append(M.Director, persons)
 		}
 		sqlStr2 := "select personid from record_act where pid=?;"
@@ -522,7 +568,9 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
 		sqlStr3 := "select personid from record_act where pid=?;"
@@ -538,7 +586,9 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Scriptwriter = append(M.Scriptwriter, persons)
 		}
 		M.Director = M.Director[1:]
@@ -563,14 +613,16 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 		year3 = "all"
 	}
 	year3 = year2
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language,URL from movie where type=? or area=? or feature =? or yyear=? order by score desc ;"
+	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where type=? or area=? or feature =? or yyear=? order by score desc ;"
 	rows0, err := Db.Query(sqlStr0, ty, area, feature, year3)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language, &M.URL)
+		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		Id := strconv.Itoa(M.Id)
+		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		sqlStr := "select personid from record_direct where pid=?;"
 		rows, err := Db.Query(sqlStr, M.Id)
 		if err != nil {
@@ -585,7 +637,9 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Director = append(M.Director, persons)
 		}
 		sqlStr2 := "select personid from record_act where pid=?;"
@@ -601,7 +655,9 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
 		sqlStr3 := "select personid from record_act where pid=?;"
@@ -617,7 +673,9 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 				fmt.Printf("scan failed, err:%v\n", err)
 				return nil
 			}
-			Db.QueryRow("select id,chinesename,URL from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+			Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
+			Id = strconv.Itoa(persons.Id)
+			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Scriptwriter = append(M.Scriptwriter, persons)
 		}
 		M.Director = M.Director[1:]

@@ -13,7 +13,7 @@ func QueryMovieimfor(id int) *Struct.Movie {
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
-	err := Db.QueryRow("select id,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where id = ?;", id).Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+	err := Db.QueryRow("select id,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where id = ?;", id).Scan(&M.Id, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
@@ -233,7 +233,7 @@ func QueryReleasingmovie() []Struct.Movie {
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
 		Id := strconv.Itoa(M.Id)
 		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		M.Date = utos(time1)
@@ -314,7 +314,7 @@ func QueryHotmovie() []Struct.Movie {
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
 		Id := strconv.Itoa(M.Id)
 		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		sqlStr := "select personid from record_direct where pid=?;"
@@ -395,7 +395,7 @@ func Querystuff(stuff string) ([]Struct.Movie, []Struct.Person) {
 	}
 
 	for rows.Next() {
-		err := rows.Scan(&M1.Id, &M1.Pid, &M1.Moviename, &M1.Year, &M1.Introduction, &time, &M1.Poster, &M1.Length, &M1.Area, &M1.Type, &M1.Feature, &M1.Releasing, &M1.Score, &M1.Language)
+		err := rows.Scan(&M1.Id, &M1.Moviename, &M1.Year, &M1.Introduction, &time, &M1.Poster, &M1.Length, &M1.Area, &M1.Type, &M1.Feature, &M1.Releasing, &M1.Score, &M1.Language)
 		Id := strconv.Itoa(M1.Id)
 		M1.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		if err != nil {
@@ -445,7 +445,7 @@ func QueryNewhotmovie() []Struct.Movie {
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
 		Id := strconv.Itoa(M.Id)
 		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		sqlStr := "select personid from record_direct where pid=?;"
@@ -533,7 +533,7 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
 		Id := strconv.Itoa(M.Id)
 		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		sqlStr := "select personid from record_direct where pid=?;"
@@ -620,7 +620,7 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 		return nil
 	}
 	for rows0.Next() {
-		err := rows0.Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+		err := rows0.Scan(&M.Id, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
 		Id := strconv.Itoa(M.Id)
 		M.URL = "http://119.91.20.70:6060/object?movie_id=" + Id
 		sqlStr := "select personid from record_direct where pid=?;"

@@ -27,7 +27,6 @@ type Money struct {
 
 type Movie struct {
 	Id           int
-	Pid          int
 	Introduction string
 	Poster       string
 	Year         int

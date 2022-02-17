@@ -13,7 +13,7 @@ func QueryMovieimfor(id int) *Struct.Movie {
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
-	err := Db.QueryRow("select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where id = ?;", id).Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
+	err := Db.QueryRow("select id,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where id = ?;", id).Scan(&M.Id, &M.Pid, &M.Moviename, &M.Year, &M.Introduction, &time1, &M.Poster, &M.Length, &M.Area, &M.Type, &M.Releasing, &M.Feature, &M.Score, &M.Language)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
@@ -226,7 +226,7 @@ func QueryReleasingmovie() []Struct.Movie {
 	var psid int
 	var persons Struct.Actorinmovie
 	var time1 []uint8
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where releasing = 1;"
+	sqlStr0 := "select id,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where releasing = 1;"
 	rows0, err := Db.Query(sqlStr0)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -307,7 +307,7 @@ func QueryHotmovie() []Struct.Movie {
 	var persons Struct.Actorinmovie
 	var time1 []uint8
 	t1 := time.Now()
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie order by timestampdiff(day,?,ddate )*0.6+score*40 desc ;"
+	sqlStr0 := "select id,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie order by timestampdiff(day,?,ddate )*0.6+score*40 desc ;"
 	rows0, err := Db.Query(sqlStr0, t1)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -387,7 +387,7 @@ func Querystuff(stuff string) ([]Struct.Movie, []Struct.Person) {
 	P := make([]Struct.Person, 1)
 	var P1 Struct.Person
 	var time []uint8
-	sqlStr := "select id, pid, moviename, yyear, introduction, ddate, posterurl, length, area, type, feature, releasing, score,language from movie where moviename like  CONCAT('%',?,'%') ;" //遍历写给登录用户的评论
+	sqlStr := "select id, moviename, yyear, introduction, ddate, posterurl, length, area, type, feature, releasing, score,language from movie where moviename like  CONCAT('%',?,'%') ;" //遍历写给登录用户的评论
 	rows, err := Db.Query(sqlStr, stuff)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -438,7 +438,7 @@ func QueryNewhotmovie() []Struct.Movie {
 	var persons Struct.Actorinmovie
 	var time1 []uint8
 	t1 := time.Now()
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where timestampdiff(month ,?,ddate )<3 order by score  desc;"
+	sqlStr0 := "select id,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where timestampdiff(month ,?,ddate )<3 order by score  desc;"
 	rows0, err := Db.Query(sqlStr0, t1)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -526,7 +526,7 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 		year3 = "all"
 	}
 	year3 = year2
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where type=? or area=? or feature =? or yyear=?;"
+	sqlStr0 := "select id,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where type=? or area=? or feature =? or yyear=?;"
 	rows0, err := Db.Query(sqlStr0, ty, area, feature, year3)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -613,7 +613,7 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 		year3 = "all"
 	}
 	year3 = year2
-	sqlStr0 := "select id,pid,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where type=? or area=? or feature =? or yyear=? order by score desc ;"
+	sqlStr0 := "select id,moviename,yyear,introduction,ddate,posterurl,length,area,type,releasing,feature,score,language from movie where type=? or area=? or feature =? or yyear=? order by score desc ;"
 	rows0, err := Db.Query(sqlStr0, ty, area, feature, year3)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)

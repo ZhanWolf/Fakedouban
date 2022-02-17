@@ -142,7 +142,7 @@ func Looked(from_id int) []Struct.Movie {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		err = Db.QueryRow("select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Pid, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Area, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
+		err = Db.QueryRow("select id, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Area, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -171,7 +171,7 @@ func Wanted(from_id int) []Struct.Movie {
 			return nil
 		}
 
-		Db.QueryRow("select id, pid, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Pid, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Area, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
+		Db.QueryRow("select id, moviename, yyear, introduction, ddate, posterurl, URL, length, area, type, feature, releasing, score from movie where id =?", movieid).Scan(&Movie.Id, &Movie.Moviename, &Movie.Year, &Movie.Introduction, &Movie.Date, &Movie.Poster, &Movie.URL, &Movie.Length, &Movie.Area, &Movie.Type, &Movie.Feature, &Movie.Releasing, &Movie.Score)
 		Movieslice = append(Movieslice, Movie)
 	}
 	Movieslice = Movieslice[1:]

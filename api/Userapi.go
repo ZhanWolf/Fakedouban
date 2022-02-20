@@ -130,7 +130,10 @@ func Clock(c *gin.Context) {
 
 func Userimfor(c *gin.Context) {
 	username := Getusernamefromtoken(c)
-	U := service.Listuserimfor(username, c)
+	U, flag := service.Listuserimfor(username, c)
+	if flag == false {
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 	})
@@ -168,7 +171,10 @@ func OtherUserimfor(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	U := service.Listuserimfor(username, c)
+	U, flag := service.Listuserimfor(username, c)
+	if flag == false {
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 	})

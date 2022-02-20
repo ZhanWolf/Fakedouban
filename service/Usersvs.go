@@ -94,15 +94,18 @@ func PasswordReset2(c *gin.Context, username string, password string, protection
 	}
 }
 
-func Listuserimfor(username string, c *gin.Context) Struct.Userimfor {
+func Listuserimfor(username string, c *gin.Context) (Struct.Userimfor, bool) {
 	dao.OpenDb()
 	var U Struct.Userimfor
 	var err error
 	U.Id, err = dao.Queryusername(username)
 	if err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusOK, "无此用户")
-		return U
+		c.JSON(500, gin.H{
+			"code": 500,
+			"msg":  "无该用户",
+		})
+		return U, false
 	}
 	U.Username = username
 	U.Introduction, err = dao.Queryintroducton(U.Id)
@@ -110,7 +113,7 @@ func Listuserimfor(username string, c *gin.Context) Struct.Userimfor {
 	U.Scm = dao.QueryUserscm(U.Id)
 	U.Looked = dao.Looked(U.Id)
 	U.Wanted = dao.Wanted(U.Id)
-	return U
+	return U, true
 }
 
 func Setintroduction(username string, introduction string) error {

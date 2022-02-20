@@ -47,7 +47,7 @@ func QueryMovieimfor(id int) *Struct.Movie {
 	}
 	M.Actor = make([]Struct.Actorinmovie, 1)
 	for rows2.Next() {
-		err := rows2.Scan(psid)
+		err := rows2.Scan(&psid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
@@ -57,7 +57,7 @@ func QueryMovieimfor(id int) *Struct.Movie {
 		persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 		M.Actor = append(M.Actor, persons)
 	}
-	sqlStr3 := "select personid from record_act where pid=?;"
+	sqlStr3 := "select personid from record_script where pid=?;"
 	rows3, err := Db.Query(sqlStr3, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -65,12 +65,12 @@ func QueryMovieimfor(id int) *Struct.Movie {
 	}
 	M.Scriptwriter = make([]Struct.Actorinmovie, 1)
 	for rows3.Next() {
-		err := rows3.Scan(psid)
+		err := rows3.Scan(&psid)
 		if err != nil {
 			fmt.Printf("scan failed, err:%v\n", err)
 			return nil
 		}
-		Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name, &persons.URl)
+		Db.QueryRow("select id,chinesename from person where id=?;", psid).Scan(&persons.Id, &persons.Name)
 		Id = strconv.Itoa(persons.Id)
 		persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 		M.Scriptwriter = append(M.Scriptwriter, persons)
@@ -86,7 +86,7 @@ func QueryPersonimfor(id int) *Struct.Person {
 	var mvid int
 	var mvs Struct.Movieinactor
 	var time1 []uint8
-	err := Db.QueryRow("select id,introduction,birthday,Constellations,chinesename,englishname,birthplace,jobs,posterurl from person where id = ?;", id).Scan(&P.Id, &P.Introduction, &time1, &P.Constellations, &P.Chinesename, &P.Englishname, &P.Birthplace, &P.Jobs, &P.Poster, &P.URl)
+	err := Db.QueryRow("select id,introduction,birthday,Constellations,chinesename,englishname,birthplace,jobs,posterurl from person where id = ?;", id).Scan(&P.Id, &P.Introduction, &time1, &P.Constellations, &P.Chinesename, &P.Englishname, &P.Birthplace, &P.Jobs, &P.Poster)
 	if err != nil {
 		fmt.Println("查询movie出错", err)
 		return nil
@@ -163,9 +163,9 @@ func removeDuplicateValues(intSlice []int) []int {
 }
 
 func QueryMoviepic2(id int) []string {
-	Moviepiclice := make([]string, 0)
+	Moviepiclice := make([]string, 1)
 	var moviepicurl string
-	sqlStr := "select id,pid,url from moviepic where pid =?;"
+	sqlStr := "select url from moviepic where pid =?;"
 	rows, err := Db.Query(sqlStr, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -180,16 +180,16 @@ func QueryMoviepic2(id int) []string {
 		}
 		Moviepiclice = append(Moviepiclice, moviepicurl)
 	}
-
+	Moviepiclice = Moviepiclice[1:]
 	rows.Close()
 
 	return Moviepiclice
 }
 
 func QueryPersonpic(id int) []string {
-	Personpicslice := make([]string, 0)
+	Personpicslice := make([]string, 1)
 	var personpicurl string
-	sqlStr := "select id,pid,url from personpic where pid =?;"
+	sqlStr := "select url from personpic where pid =?;"
 	rows, err := Db.Query(sqlStr, id)
 	if err != nil {
 		fmt.Printf("query failed, err:%v\n", err)
@@ -205,7 +205,7 @@ func QueryPersonpic(id int) []string {
 		Personpicslice = append(Personpicslice, personpicurl)
 
 	}
-
+	Personpicslice = Personpicslice[1:]
 	rows.Close()
 	return Personpicslice
 }
@@ -273,7 +273,7 @@ func QueryReleasingmovie() []Struct.Movie {
 			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
-		sqlStr3 := "select personid from record_act where pid=?;"
+		sqlStr3 := "select personid from record_script where pid=?;"
 		rows3, err := Db.Query(sqlStr3, M.Id)
 		if err != nil {
 			fmt.Printf("query failed, err:%v\n", err)
@@ -354,7 +354,7 @@ func QueryHotmovie() []Struct.Movie {
 			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
-		sqlStr3 := "select personid from record_act where pid=?;"
+		sqlStr3 := "select personid from record_script where pid=?;"
 		rows3, err := Db.Query(sqlStr3, M.Id)
 		if err != nil {
 			fmt.Printf("query failed, err:%v\n", err)
@@ -485,7 +485,7 @@ func QueryNewhotmovie() []Struct.Movie {
 			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
-		sqlStr3 := "select personid from record_act where pid=?;"
+		sqlStr3 := "select personid from record_script where pid=?;"
 		rows3, err := Db.Query(sqlStr3, M.Id)
 		if err != nil {
 			fmt.Printf("query failed, err:%v\n", err)
@@ -573,7 +573,7 @@ func Classificationmovie(ty string, area string, year string, feature string) []
 			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
-		sqlStr3 := "select personid from record_act where pid=?;"
+		sqlStr3 := "select personid from record_script where pid=?;"
 		rows3, err := Db.Query(sqlStr3, M.Id)
 		if err != nil {
 			fmt.Printf("query failed, err:%v\n", err)
@@ -660,7 +660,7 @@ func ClassificationListmovie(ty string, area string, year string, feature string
 			persons.URl = "http://119.91.20.70:6060/celebrity?person_id=" + Id
 			M.Actor = append(M.Actor, persons)
 		}
-		sqlStr3 := "select personid from record_act where pid=?;"
+		sqlStr3 := "select personid from record_script where pid=?;"
 		rows3, err := Db.Query(sqlStr3, M.Id)
 		if err != nil {
 			fmt.Printf("query failed, err:%v\n", err)

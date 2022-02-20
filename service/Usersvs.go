@@ -8,21 +8,14 @@ import (
 	"net/http"
 )
 
-func UserLoginser(username string, password string) (string, *http.Cookie) {
+func UserLoginser(username string, password string) string {
 	dao.OpenDb()
 	turepassword := dao.Queryuserpassword(username)
 	if turepassword != password {
-		return "", nil
+		return ""
 	}
 
-	cookie := &http.Cookie{
-		Name:     "now_user_login",
-		Value:    username,
-		MaxAge:   300,
-		Path:     "/",
-		HttpOnly: true,
-	}
-	return username, cookie
+	return username
 }
 
 func Checkuseraliveser(username string) error {
@@ -31,11 +24,11 @@ func Checkuseraliveser(username string) error {
 	return err
 }
 
-func UserSingup(username string, password string, passwordagain string, protectionQ string, protectionA string) (*http.Cookie, bool) {
+func UserSingup(username string, password string, passwordagain string, protectionQ string, protectionA string) bool {
 	dao.OpenDb()
 
 	if passwordagain != password {
-		return nil, true
+		return true
 	}
 
 	err := dao.Insertuser(username, password, protectionQ, protectionA)
@@ -43,15 +36,7 @@ func UserSingup(username string, password string, passwordagain string, protecti
 		fmt.Println("注册错误", err)
 	}
 
-	cookie := &http.Cookie{
-		Name:     "now_user_login",
-		Value:    username,
-		MaxAge:   300,
-		Path:     "/",
-		HttpOnly: true,
-	}
-
-	return cookie, false
+	return false
 }
 
 func PasswordReset(c *gin.Context, username string) (bool, string) {

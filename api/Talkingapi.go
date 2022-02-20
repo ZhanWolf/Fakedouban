@@ -9,7 +9,7 @@ import (
 )
 
 func Talkingapi(c *gin.Context) {
-	username, _ := c.Cookie("now_user_login")
+	username := Getusernamefromtoken(c)
 	id, err := dao.Queryusername(username)
 	if err != nil {
 		fmt.Println(err)
@@ -33,7 +33,7 @@ func Talkingapi(c *gin.Context) {
 }
 
 func Talkingcmapi(c *gin.Context) {
-	username, _ := c.Cookie("now_user_login")
+	username := Getusernamefromtoken(c)
 	id, err := dao.Queryusername(username)
 	if err != nil {
 		fmt.Println(err)
@@ -56,7 +56,7 @@ func Talkingcmapi(c *gin.Context) {
 }
 
 func Talkingchcmapi(c *gin.Context) {
-	username, _ := c.Cookie("now_user_login")
+	username := Getusernamefromtoken(c)
 	id, err := dao.Queryusername(username)
 	if err != nil {
 		fmt.Println(err)

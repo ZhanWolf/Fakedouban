@@ -29,7 +29,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	username1, cookie := service.UserLoginser(username, password)
+	username1 := service.UserLoginser(username, password)
 	if username1 == "" {
 		c.JSON(403, gin.H{
 			"code":   "403",
@@ -38,7 +38,6 @@ func Login(c *gin.Context) {
 		return
 	}
 	id, err := dao.Queryusername(username)
-	http.SetCookie(c.Writer, cookie)
 	token := generateToken(c, id, username)
 	c.JSON(http.StatusOK, gin.H{
 		"code":     200,
@@ -80,7 +79,7 @@ func Singup(c *gin.Context) {
 		return
 	}
 
-	cookie, flag := service.UserSingup(username, password, passwordagain, protectionQ, protectionA)
+	flag := service.UserSingup(username, password, passwordagain, protectionQ, protectionA)
 	if flag {
 		c.JSON(403, gin.H{
 			"code":   403,
@@ -94,7 +93,7 @@ func Singup(c *gin.Context) {
 		"Id":       id,
 		"username": username,
 	})
-	http.SetCookie(c.Writer, cookie)
+
 }
 
 func QueryprotectionQ(c *gin.Context) {
@@ -113,7 +112,7 @@ func QueryprotectionQ(c *gin.Context) {
 }
 
 func Reset(c *gin.Context) {
-	username := c.PostForm("username")
+	username := Getusernamefromtoken(c)
 	password := c.PostForm("password")
 	passwordagain := c.PostForm("passwordagain")
 	protectionA := c.PostForm("protectionA")
@@ -122,7 +121,7 @@ func Reset(c *gin.Context) {
 }
 
 func Clock(c *gin.Context) {
-	username, _ := c.Cookie("now_user_login")
+	username := Getusernamefromtoken(c)
 	c.JSON(http.StatusOK, gin.H{
 		"hello": username,
 		"现在时间":  time.Now(),
@@ -130,7 +129,7 @@ func Clock(c *gin.Context) {
 }
 
 func Userimfor(c *gin.Context) {
-	username, _ := c.Cookie("now_user_login")
+	username := Getusernamefromtoken(c)
 	U := service.Listuserimfor(username, c)
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
@@ -139,7 +138,7 @@ func Userimfor(c *gin.Context) {
 }
 
 func Setuserintroduction(c *gin.Context) {
-	username, _ := c.Cookie("now_user_login")
+	username := Getusernamefromtoken(c)
 	introduction := c.PostForm("introduction")
 	err := service.Setintroduction(username, introduction)
 	if err != nil {
@@ -147,6 +146,7 @@ func Setuserintroduction(c *gin.Context) {
 			"code":   403,
 			"reason": "修改信息失败",
 		})
+		return
 	}
 	id, err := dao.Queryusername(username)
 	c.JSON(http.StatusOK, gin.H{
@@ -204,4 +204,15 @@ func generateToken(c *gin.Context, Id int, Username string) string {
 	log.Println(token)
 
 	return token
+}
+
+func Getusernamefromtoken(c *gin.Context) string {
+	token := c.Request.Header.Get("token")
+
+	log.Print("get token: ", token)
+
+	j := myjwt.NewJWT()
+	// parseToken 解析token包含的信息
+	claims, _ := j.ParseToken(token)
+	return claims.Username
 }

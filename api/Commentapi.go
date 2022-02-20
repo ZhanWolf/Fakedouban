@@ -13,7 +13,7 @@ import (
 func Commentapi(c *gin.Context) {
 	var cm Struct.Comment
 
-	cm.From_username, _ = c.Cookie("now_user_login")
+	cm.From_username = Getusernamefromtoken(c)
 	cm.From_id, _ = dao.Queryusername(cm.From_username)
 	if cm.From_id == 0 {
 		fmt.Println("发生错误")
@@ -53,7 +53,7 @@ func Chcommentapi(c *gin.Context) {
 		fmt.Println("未找到父亲id的评论")
 		return
 	}
-	From_username, _ := c.Cookie("now_user_login")
+	From_username := Getusernamefromtoken(c)
 	From_id, _ := dao.Queryusername(From_username)
 	if From_id == 0 {
 		fmt.Println("发生错误")
@@ -86,7 +86,7 @@ func Listcommentapi(c *gin.Context) {
 }
 
 func Shortcommentapi(c *gin.Context) {
-	From_username, _ := c.Cookie("now_user_login")
+	From_username := Getusernamefromtoken(c)
 	From_id, _ := dao.Queryusername(From_username)
 	if From_id == 0 {
 		fmt.Println("发生错误")

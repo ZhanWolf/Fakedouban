@@ -28,6 +28,7 @@ func JWTAuth() gin.HandlerFunc {
 		j := NewJWT()
 		// parseToken 解析token包含的信息
 		claims, err := j.ParseToken(token)
+
 		if err != nil {
 			if err == TokenExpired {
 				c.JSON(500, gin.H{
@@ -48,7 +49,9 @@ func JWTAuth() gin.HandlerFunc {
 		}
 		// 继续交由下一个路由处理,并将解析出的信息传递下去
 		c.Set("claims", claims)
+		return
 	}
+
 }
 
 // JWT 签名结构
@@ -139,3 +142,5 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 	}
 	return "", TokenInvalid
 }
+
+//引用于 https://www.jianshu.com/p/1f9915818992

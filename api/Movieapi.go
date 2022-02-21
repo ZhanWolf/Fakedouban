@@ -17,6 +17,7 @@ func Movieimforapi(c *gin.Context) {
 			"code": 500,
 			"msg":  "无该电影",
 		})
+		c.Abort()
 		return
 	}
 	M := service.Movieinfor(movieid2)

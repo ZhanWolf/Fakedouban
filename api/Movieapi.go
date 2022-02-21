@@ -13,16 +13,18 @@ func Movieimforapi(c *gin.Context) {
 	movieid2, _ := strconv.Atoi(movieid)
 	flag := service.Checkmoviealiveser(movieid2)
 	if flag == false {
-		c.JSON(http.StatusOK, "未找到该电影")
+		c.JSON(500, gin.H{
+			"code": 500,
+			"msg":  "无该电影",
+		})
 		return
 	}
 	M := service.Movieinfor(movieid2)
-	cm := service.ListFlimcommentbyuse(movieid2)
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 	})
 	c.JSON(http.StatusOK, M)
-	c.JSON(http.StatusOK, cm)
+
 }
 
 func Personapi(c *gin.Context) {
@@ -41,9 +43,6 @@ func Moviepicapi(c *gin.Context) {
 
 	movieid2, _ := strconv.Atoi(movieid)
 	M := service.Moviepicsvs(movieid2)
-	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
-	})
 	c.JSON(http.StatusOK, M)
 }
 
@@ -52,9 +51,6 @@ func Personpic(c *gin.Context) {
 
 	movieid2, _ := strconv.Atoi(movieid)
 	M := service.Personpicsvs(movieid2)
-	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
-	})
 	c.JSON(http.StatusOK, M)
 }
 
@@ -63,9 +59,6 @@ func Coperson(c *gin.Context) {
 
 	movieid2, _ := strconv.Atoi(movieid)
 	M := service.Copersonsvs(movieid2)
-	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
-	})
 	c.JSON(http.StatusOK, M)
 }
 
